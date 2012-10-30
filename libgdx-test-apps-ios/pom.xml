@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.gemserk.games.libgdxtestapps</groupId>
+		<artifactId>libgdx-test-apps</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>libgdx-test-apps-ios</artifactId>
+
+	<packaging>jar</packaging>
+
+	<name>Libgdx tests - ios dll for monotouch</name>
+	<description>Libgdx tests ios dll for monotouch</description>
+
+	<properties>
+		<finalName>libgdx-test-apps-ios</finalName>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> 
+				<executions> <execution> <phase>package</phase> <goals> <goal>unpack-dependencies</goal> 
+				</goals> </execution> </executions> <configuration> <outputDirectory>target/unpacked</outputDirectory> 
+				<overWriteSnapshots>true</overWriteSnapshots> <overWriteReleases>true</overWriteReleases> 
+				<excludeArtifactIds>gdx,logback-core,logback-classic</excludeArtifactIds> 
+				</configuration> </plugin -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<finalName>${finalName}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<target>
+								<ant
+									antfile="../libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/convert.xml"
+									target="convert" inheritall="false" useNativeBasedir="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>libgdx-test-apps-core</artifactId>
+			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx</artifactId>
+			<version>${gdx.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx.ios</groupId>
+			<artifactId>monotouch</artifactId>
+			<version>5.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx.ios</groupId>
+			<artifactId>mscorlib</artifactId>
+			<version>4.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx.ios</groupId>
+			<artifactId>opentk</artifactId>
+			<version>5.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx.ios</groupId>
+			<artifactId>system</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx.ios</groupId>
+			<artifactId>system-core</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx.ios</groupId>
+			<artifactId>system-data</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+</project>
+

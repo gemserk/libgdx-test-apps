@@ -1,0 +1,42 @@
+/.project
+/.settings
+/.classpath
+/target
+
+/libgdx-test-apps-core/.project
+/libgdx-test-apps-core/.settings
+/libgdx-test-apps-core/.classpath
+/libgdx-test-apps-core/target
+
+/libgdx-test-apps-android/.project
+/libgdx-test-apps-android/.settings
+/libgdx-test-apps-android/.classpath
+/libgdx-test-apps-android/target
+/libgdx-test-apps-android/bin
+/libgdx-test-apps-android/gen
+/libgdx-test-apps-android/libs
+
+/libgdx-test-apps-desktop/.project
+/libgdx-test-apps-desktop/.settings
+/libgdx-test-apps-desktop/.classpath
+/libgdx-test-apps-desktop/target
+/libgdx-test-apps-desktop/hs_err_pid*.log
+
+/libgdx-test-apps-ios/.project
+/libgdx-test-apps-ios/.settings
+/libgdx-test-apps-ios/.classpath
+/libgdx-test-apps-ios/target
+
+.DS_Store
+/libgdx-test-apps-iosmonotouch/.DS_Store
+/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/.DS_Store
+/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/bin/
+/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch.dll
+/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch.dll.mdb
+# /libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/libs/
+/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch/obj/
+# /libgdx-test-apps-iosmonotouch/libgdx.a
+# /libgdx-test-apps-iosmonotouch/libikvm-natives.a
+/libgdx-test-apps-iosmonotouch/libgdx-test-apps-iosmonotouch.userprefs
+
+/assets/concept/others
