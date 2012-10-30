@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -31,10 +32,11 @@ public class TestSelectionScreen extends TestScreen {
 		stage = new Stage(width, height, false);
 		Gdx.input.setInputProcessor(stage);
 
-		Window window = new Window("SELECT A TEST", skin);
+		Table container = new Window("Select a test", skin);
+		container.setTransform(false);
 
-		window.setSize(width * 0.95f, height * 0.95f);
-		window.setPosition(width * 0.025f, height * 0.025f);
+		container.setSize(width * 0.95f, height * 0.95f);
+		container.setPosition(width * 0.025f, height * 0.025f);
 
 		final List list = new List(new String[] { "Hello", "World", "Bye" }, skin);
 		list.setTouchable(Touchable.enabled);
@@ -42,11 +44,11 @@ public class TestSelectionScreen extends TestScreen {
 		ScrollPane scrollPane = new ScrollPane(list);
 		scrollPane.setTouchable(Touchable.childrenOnly);
 
-		window.add(scrollPane).pad(10f).expand().fill();
-
-		window.row();
+		container.add(scrollPane).pad(10f).expand().fill();
+		container.row();
 		
 		TextButton startButton = new TextButton("START", skin);
+		startButton.setTransform(false);
 		startButton.addListener(new ClickListener() { 
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -55,15 +57,15 @@ public class TestSelectionScreen extends TestScreen {
 			}
 		});
 		
-		window.add(startButton).center().expandX().fillX();
+		container.add(startButton).center().expandX().fillX();
 
-		stage.addActor(window);
+		stage.addActor(container);
 
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 	}
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		stage.draw();
 	}
