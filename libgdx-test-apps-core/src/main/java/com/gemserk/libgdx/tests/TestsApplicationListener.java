@@ -2,7 +2,6 @@ package com.gemserk.libgdx.tests;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL10;
 
 public class TestsApplicationListener implements ApplicationListener {
 

@@ -25,13 +25,16 @@ public class TestSelectionScreen extends TestScreen {
 		atlas = new TextureAtlas(Gdx.files.internal("data/ui/uiskin.atlas"));
 		skin = new Skin(Gdx.files.internal("data/ui/uiskin.json"), atlas);
 
-		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		int width = Gdx.graphics.getWidth();
+		int height = Gdx.graphics.getHeight();
+
+		stage = new Stage(width, height, false);
 		Gdx.input.setInputProcessor(stage);
 
 		Window window = new Window("SELECT A TEST", skin);
 
-		window.setSize(700f, 400f);
-		window.setPosition(50f, 40f);
+		window.setSize(width * 0.95f, height * 0.95f);
+		window.setPosition(width * 0.025f, height * 0.025f);
 
 		final List list = new List(new String[] { "Hello", "World", "Bye" }, skin);
 		list.setTouchable(Touchable.enabled);
