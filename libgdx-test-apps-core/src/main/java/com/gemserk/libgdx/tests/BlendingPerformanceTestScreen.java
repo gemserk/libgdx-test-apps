@@ -94,19 +94,6 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 			optionsContainer.row();
 			
 			{
-				TextButton textButton = new TextButton("+", skin);
-				textButton.addListener(new ClickListener() {
-					@Override
-					public void clicked(InputEvent event, float x, float y) {
-						super.clicked(event, x, y);
-						renderTimes++;
-						updateRenderTimes();
-					}
-				});
-				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
-			}
-			
-			{
 				TextButton textButton = new TextButton("-", skin);
 				textButton.addListener(new ClickListener() {
 					@Override
@@ -116,6 +103,19 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 							renderTimes--;
 							updateRenderTimes();
 						}
+					}
+				});
+				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+			}
+			
+			{
+				TextButton textButton = new TextButton("+", skin);
+				textButton.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						renderTimes++;
+						updateRenderTimes();
 					}
 				});
 				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
