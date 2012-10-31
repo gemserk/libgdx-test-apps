@@ -46,8 +46,10 @@ public class TestsApplicationListener implements ApplicationListener {
 
 	@Override
 	public void render() {
-		if (currentTestScreen != null)
+		if (currentTestScreen != null) {
 			currentTestScreen.render();
+			currentTestScreen.update();
+		}
 		spriteBatch.begin();
 		font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, Gdx.graphics.getHeight() - 20);
 		spriteBatch.end();
