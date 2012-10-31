@@ -6,10 +6,12 @@ import com.badlogic.gdx.Gdx;
 public class TestsApplicationListener implements ApplicationListener {
 
 	TestScreen currentTestScreen;
+	TestScreen selectorTestScreen;
 
 	@Override
 	public void create() {
-		setTestScreen(new TestSelectionScreen());
+		selectorTestScreen = new TestSelectionScreen();
+		setTestScreen(selectorTestScreen);
 	}
 
 	@Override
@@ -39,6 +41,10 @@ public class TestsApplicationListener implements ApplicationListener {
 		if (currentTestScreen != null)
 			currentTestScreen.dispose();
 		currentTestScreen = null;
+	}
+	
+	public void backToSelection() { 
+		setTestScreen(selectorTestScreen);
 	}
 
 	public void setTestScreen(final TestScreen testScreen) {
