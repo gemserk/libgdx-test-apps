@@ -9,8 +9,8 @@ public class Main {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Gemserk Tests";
-		config.width = 800;
-		config.height = 480;
+		config.width = 960;
+		config.height = 640;
 		config.fullscreen = false;
 		config.useGL20 = true;
 		config.useCPUSynch = true;

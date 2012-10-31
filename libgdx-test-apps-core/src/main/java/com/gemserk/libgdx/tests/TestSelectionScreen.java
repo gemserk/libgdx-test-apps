@@ -76,6 +76,14 @@ public class TestSelectionScreen extends TestScreen {
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		skin.dispose();
+		atlas.dispose();
+		stage.dispose();
+	}
 
 	@Override
 	public void render() {
@@ -86,14 +94,6 @@ public class TestSelectionScreen extends TestScreen {
 	@Override
 	public void update() {
 		stage.act();
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-		skin.dispose();
-		atlas.dispose();
-		stage.dispose();
 	}
 
 }
