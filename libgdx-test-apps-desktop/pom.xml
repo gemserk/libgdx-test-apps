@@ -66,6 +66,11 @@
 			<artifactId>gdx-backend-lwjgl</artifactId>
 			<version>${gdx.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx-tools</artifactId>
+			<version>0.9.7-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>
