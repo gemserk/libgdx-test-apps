@@ -5,12 +5,14 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -30,12 +32,15 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	final float timeToHide = 5f;
 
 	boolean blending;
+	boolean depthFunc;
+	
 	int renderTimes;
 	float stageHideTimeout;
 
 	@Override
 	public void create() {
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+		Gdx.gl.glDepthFunc(GL11.GL_EQUAL);
 
 		int width = Gdx.graphics.getWidth();
 		int height = Gdx.graphics.getHeight();
@@ -66,6 +71,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		};
 
 		blending = true;
+		depthFunc = false;
 		renderTimes = 1;
 
 		skinAtlas = new TextureAtlas(Gdx.files.internal("data/ui/uiskin.atlas"));
@@ -77,25 +83,58 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		Table optionsContainer = new Window("Options", skin);
 		optionsContainer.setTransform(false);
 
-		optionsContainer.setSize(width * 0.8f, height * 0.5f);
-		optionsContainer.setPosition(width * 0.1f, height * 0.4f);
+		optionsContainer.setSize(width * 0.8f, height * 0.8f);
+		optionsContainer.setPosition(width * 0.1f, height * 0.1f);
 
 		{
 			// add intermediate container...
-			
+
 			// add some custom stuff
+
 			{
-				TextButton textButton = new TextButton("RenderTimes: " + renderTimes, skin);
-				textButton.setName("RenderTimes");
-				textButton.setTouchable(Touchable.disabled);
-				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
+				final CheckBox actor = new CheckBox("Blending: enabled", skin);
+				actor.setName("Blending");
+				actor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						blending = !blending;
+						actor.setText("Blending: " + (blending ? "enabled" : "disabled"));
+					}
+				});
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
 			}
-			
+
 			optionsContainer.row();
 			
 			{
-				TextButton textButton = new TextButton("-", skin);
-				textButton.addListener(new ClickListener() {
+				final CheckBox actor = new CheckBox("DepthFunc: " + (depthFunc ? "enabled" : "disabled"), skin);
+				actor.setName("DepthFunc");
+				actor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						depthFunc = !depthFunc;
+						actor.setText("DepthFunc: " + (depthFunc ? "enabled" : "disabled"));
+					}
+				});
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
+			}
+
+			optionsContainer.row();
+
+			{
+				TextButton actor = new TextButton("RenderTimes: " + renderTimes, skin);
+				actor.setName("RenderTimes");
+				actor.setTouchable(Touchable.disabled);
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
+			}
+
+			optionsContainer.row();
+
+			{
+				TextButton actor = new TextButton("-", skin);
+				actor.addListener(new ClickListener() {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
 						super.clicked(event, x, y);
@@ -105,9 +144,9 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 						}
 					}
 				});
-				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
 			}
-			
+
 			{
 				TextButton textButton = new TextButton("+", skin);
 				textButton.addListener(new ClickListener() {
@@ -138,7 +177,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 			optionsContainer.add(textButton).center().bottom().colspan(5).padLeft(10f).padRight(10f).expandX().fillX().padBottom(20f);
 		}
-		
+
 		optionsContainer.row();
 
 		{
@@ -160,7 +199,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		stage.getRoot().setVisible(false);
 		stageHideTimeout = 0f;
 	}
-	
+
 	private void updateRenderTimes() {
 		TextButton button = (TextButton) stage.getRoot().findActor("RenderTimes");
 		button.setText("RenderTimes: " + renderTimes);
@@ -183,7 +222,16 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	@Override
 	public void render() {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		if (blending)
+			spriteBatch.enableBlending();
+		else
+			spriteBatch.disableBlending();
+
 		spriteBatch.begin();
+		
+		Gdx.gl.glDepthMask(depthFunc);
+		
 		for (int i = 0; i < renderTimes; i++)
 			treesSprite.draw(spriteBatch);
 		spriteBatch.end();
