@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -73,20 +74,61 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		stage = new Stage(width, height, false);
 		Gdx.input.setInputProcessor(new InputMultiplexer(screenInputProcessor, stage));
-		
+
 		Table optionsContainer = new Window("Options", skin);
-		
+		optionsContainer.setTransform(false);
+
 		optionsContainer.setSize(width * 0.8f, height * 0.5f);
 		optionsContainer.setPosition(width * 0.1f, height * 0.4f);
 
 		{
-			// add some custom stuff
-		}
-		
-		{
-			optionsContainer.row();
-			TextButton textButton = new TextButton("BACK", skin);
+			// add intermediate container...
 			
+			// add some custom stuff
+			{
+				TextButton textButton = new TextButton("RenderTimes: " + renderTimes, skin);
+				textButton.setName("RenderTimes");
+				textButton.setTouchable(Touchable.disabled);
+				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
+			}
+			
+			optionsContainer.row();
+			
+			{
+				TextButton textButton = new TextButton("+", skin);
+				textButton.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						renderTimes++;
+						updateRenderTimes();
+					}
+				});
+				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+			}
+			
+			{
+				TextButton textButton = new TextButton("-", skin);
+				textButton.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						if (renderTimes > 1) {
+							renderTimes--;
+							updateRenderTimes();
+						}
+					}
+				});
+				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+			}
+
+		}
+
+		optionsContainer.row();
+
+		{
+			TextButton textButton = new TextButton("BACK", skin);
+
 			textButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -94,14 +136,19 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 					BlendingPerformanceTestScreen.this.parent.backToSelection();
 				}
 			});
-			
+
 			optionsContainer.add(textButton).center().bottom().colspan(5).padLeft(10f).padRight(10f).expandX().fillX();
 		}
-		
+
 		stage.addActor(optionsContainer);
-		
+
 		stage.getRoot().setVisible(false);
 		stageHideTimeout = 0f;
+	}
+	
+	private void updateRenderTimes() {
+		TextButton button = (TextButton) stage.getRoot().findActor("RenderTimes");
+		button.setText("RenderTimes: " + renderTimes);
 	}
 
 	@Override
