@@ -1,5 +1,8 @@
 package com.gemserk.libgdx.tests;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -19,7 +22,14 @@ public class TestSelectionScreen extends TestScreen {
 	private Skin skin;
 	private TextureAtlas atlas;
 	private Stage stage;
-
+	
+	Map<String, TestScreen> screens;
+	
+	public TestSelectionScreen() {
+		screens = new HashMap<String, TestScreen>();
+		screens.put("BlendingPerformanceTest", new BlendingPerformanceTestScreen());
+	}
+	
 	@Override
 	public void create() {
 		super.create();
@@ -38,7 +48,10 @@ public class TestSelectionScreen extends TestScreen {
 		container.setSize(width * 0.95f, height * 0.95f);
 		container.setPosition(width * 0.025f, height * 0.025f);
 
-		final List list = new List(new String[] { "Hello", "World", "Bye" }, skin);
+		String[] keys = new String[screens.keySet().size()];
+		keys = screens.keySet().toArray(keys);
+
+		final List list = new List(keys, skin);
 		list.setTouchable(Touchable.enabled);
 
 		ScrollPane scrollPane = new ScrollPane(list);
@@ -53,7 +66,7 @@ public class TestSelectionScreen extends TestScreen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				parent.setTestScreen(new BlendingPerformanceTestScreen());
+				parent.setTestScreen(screens.get(list.getSelection()));
 			}
 		});
 		
