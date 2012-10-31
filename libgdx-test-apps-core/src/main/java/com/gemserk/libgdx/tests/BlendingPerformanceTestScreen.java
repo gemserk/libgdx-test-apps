@@ -140,34 +140,26 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 			}
 
 			optionsContainer.row();
-
 			{
-				TextButton actor = new TextButton("-", skin);
-				actor.addListener(new ClickListener() {
-					@Override
-					public void clicked(InputEvent event, float x, float y) {
-						super.clicked(event, x, y);
-						if (renderTimes > 1) {
-							renderTimes--;
-							updateRenderTimes();
+
+				int[] renderTimesDeltas = { -10, -1, 1, 10 };
+				for (int i = 0; i < renderTimesDeltas.length; i++) {
+					final int renderTimeDelta = renderTimesDeltas[i];
+					TextButton actor = new TextButton("" + renderTimeDelta, skin);
+					actor.addListener(new ClickListener() {
+						@Override
+						public void clicked(InputEvent event, float x, float y) {
+							super.clicked(event, x, y);
+							if (renderTimeDelta > 0 || renderTimes + renderTimeDelta > 0) {
+								renderTimes += renderTimeDelta;
+								updateRenderTimes();
+							}
 						}
-					}
-				});
-				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+					});
+					optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+				}
 			}
-
-			{
-				TextButton textButton = new TextButton("+", skin);
-				textButton.addListener(new ClickListener() {
-					@Override
-					public void clicked(InputEvent event, float x, float y) {
-						super.clicked(event, x, y);
-						renderTimes++;
-						updateRenderTimes();
-					}
-				});
-				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
-			}
+			
 
 			optionsContainer.row();
 
