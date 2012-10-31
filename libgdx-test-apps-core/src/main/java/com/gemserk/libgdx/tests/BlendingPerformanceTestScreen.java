@@ -21,7 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class BlendingPerformanceTestScreen extends TestScreen {
 
-	TextureAtlas atlas;
+	TextureAtlas atlas1, atlas2;
 	SpriteBatch spriteBatch;
 	TextureAtlas skinAtlas;
 	Skin skin;
@@ -33,9 +33,12 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 	boolean blending;
 	boolean depthFunc;
-	
+	boolean multipleBatches;
+	boolean twoTextures;
+
 	int renderTimes;
 	float stageHideTimeout;
+	private Sprite treesSprite2;
 
 	@Override
 	public void create() {
@@ -47,10 +50,14 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		spriteBatch = new SpriteBatch();
 
-		atlas = new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
-		treesSprite = atlas.createSprite("trees");
+		atlas1 = new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
+		atlas2 = new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
 
+		treesSprite = atlas1.createSprite("trees");
 		treesSprite.setSize(width, height);
+
+		treesSprite2 = atlas2.createSprite("trees");
+		treesSprite2.setSize(width, height);
 
 		InputAdapter screenInputProcessor = new InputAdapter() {
 			@Override
@@ -72,6 +79,8 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		blending = true;
 		depthFunc = false;
+		multipleBatches = false;
+		twoTextures = false;
 		renderTimes = 1;
 
 		skinAtlas = new TextureAtlas(Gdx.files.internal("data/ui/uiskin.atlas"));
@@ -92,30 +101,30 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 			// add some custom stuff
 
 			{
-				final CheckBox actor = new CheckBox("Blending: enabled", skin);
+				final CheckBox actor = new CheckBox("Blending: " + textForBoolean(blending), skin);
 				actor.setName("Blending");
 				actor.addListener(new ClickListener() {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
 						super.clicked(event, x, y);
 						blending = !blending;
-						actor.setText("Blending: " + (blending ? "enabled" : "disabled"));
+						actor.setText("Blending: " + textForBoolean(blending));
 					}
 				});
 				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
 			}
 
 			optionsContainer.row();
-			
+
 			{
-				final CheckBox actor = new CheckBox("DepthFunc: " + (depthFunc ? "enabled" : "disabled"), skin);
+				final CheckBox actor = new CheckBox("DepthFunc: " + textForBoolean(depthFunc), skin);
 				actor.setName("DepthFunc");
 				actor.addListener(new ClickListener() {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
 						super.clicked(event, x, y);
 						depthFunc = !depthFunc;
-						actor.setText("DepthFunc: " + (depthFunc ? "enabled" : "disabled"));
+						actor.setText("DepthFunc: " + textForBoolean(depthFunc));
 					}
 				});
 				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
@@ -158,6 +167,38 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 					}
 				});
 				optionsContainer.add(textButton).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+			}
+
+			optionsContainer.row();
+
+			{
+				final CheckBox actor = new CheckBox("Multiple batches: " + textForBoolean(multipleBatches), skin);
+				actor.setName("MultipleBatchs");
+				actor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						multipleBatches = !multipleBatches;
+						actor.setText("Multiple batches: " + textForBoolean(multipleBatches));
+					}
+				});
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
+			}
+
+			optionsContainer.row();
+
+			{
+				final CheckBox actor = new CheckBox("Two textures: " + textForBoolean(twoTextures), skin);
+				actor.setName("TwoTextures");
+				actor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						twoTextures = !twoTextures;
+						actor.setText("Two textures: " + textForBoolean(twoTextures));
+					}
+				});
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
 			}
 
 		}
@@ -207,12 +248,14 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 	@Override
 	public void dispose() {
-		atlas.dispose();
+		atlas1.dispose();
+		atlas2.dispose();
 		spriteBatch.dispose();
 		skinAtlas.dispose();
 		skin.dispose();
 		stage.dispose();
-		atlas = null;
+		atlas1 = null;
+		atlas2 = null;
 		spriteBatch = null;
 		skinAtlas = null;
 		skin = null;
@@ -222,20 +265,36 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	@Override
 	public void render() {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
+
 		if (blending)
 			spriteBatch.enableBlending();
 		else
 			spriteBatch.disableBlending();
 
-		spriteBatch.begin();
-		
-		Gdx.gl.glDepthMask(depthFunc);
-		
-		for (int i = 0; i < renderTimes; i++)
-			treesSprite.draw(spriteBatch);
-		spriteBatch.end();
-		stage.draw();
+		if (!multipleBatches) {
+			spriteBatch.begin();
+			Gdx.gl.glDepthMask(depthFunc);
+			for (int i = 0; i < renderTimes; i++) {
+				treesSprite.draw(spriteBatch);
+				if (twoTextures) {
+					treesSprite2.draw(spriteBatch);
+				}
+			}
+			spriteBatch.end();
+		} else {
+			for (int i = 0; i < renderTimes; i++) {
+				spriteBatch.begin();
+				Gdx.gl.glDepthMask(depthFunc);
+				treesSprite.draw(spriteBatch);
+				if (twoTextures) {
+					treesSprite2.draw(spriteBatch);
+				}
+				spriteBatch.end();
+			}
+		}
+
+		if (stage.getRoot().isVisible())
+			stage.draw();
 	}
 
 	@Override
@@ -244,6 +303,10 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		if (stageHideTimeout < 0f)
 			stage.getRoot().setVisible(false);
 		stage.act();
+	}
+
+	private String textForBoolean(boolean b) {
+		return b ? "enabled" : "disabled";
 	}
 
 }
