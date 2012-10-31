@@ -249,6 +249,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx-backend-android</artifactId>
+			<version>${gdx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
 			<artifactId>gdx-platform</artifactId>
 			<version>${gdx.version}</version>
 			<classifier>natives-armeabi</classifier>

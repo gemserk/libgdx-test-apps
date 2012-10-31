@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.esotericsoftware.tablelayout.BaseTableLayout;
 
 public class BlendingPerformanceTestScreen extends TestScreen {
 
@@ -28,7 +27,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 	Sprite treesSprite;
 
-	final float timeToHide = 2f;
+	final float timeToHide = 5f;
 
 	boolean blending;
 	int renderTimes;
@@ -127,7 +126,23 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		optionsContainer.row();
 
 		{
-			TextButton textButton = new TextButton("BACK", skin);
+			TextButton textButton = new TextButton("HIDE", skin);
+
+			textButton.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					super.clicked(event, x, y);
+					stage.getRoot().setVisible(false);
+				}
+			});
+
+			optionsContainer.add(textButton).center().bottom().colspan(5).padLeft(10f).padRight(10f).expandX().fillX().padBottom(20f);
+		}
+		
+		optionsContainer.row();
+
+		{
+			TextButton textButton = new TextButton("MENU", skin);
 
 			textButton.addListener(new ClickListener() {
 				@Override
