@@ -150,7 +150,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 						@Override
 						public void clicked(InputEvent event, float x, float y) {
 							super.clicked(event, x, y);
-							if (renderTimeDelta > 0 || renderTimes + renderTimeDelta > 0) {
+							if (renderTimes + renderTimeDelta > 0) {
 								renderTimes += renderTimeDelta;
 								updateRenderTimes();
 							}
