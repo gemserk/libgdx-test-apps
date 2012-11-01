@@ -1,8 +1,6 @@
 package com.gemserk.libgdx.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
@@ -16,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class BlendingPerformanceTestScreen extends TestScreen {
@@ -36,12 +33,11 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	boolean depthFunc;
 	boolean multipleBatches;
 	boolean twoTextures;
-	
+
 	boolean smallTexture1;
 	boolean smallTexture2;
 
 	int renderTimes;
-	float stageHideTimeout;
 
 	@Override
 	public void create() {
@@ -71,41 +67,15 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		smallTexture2 = false;
 		renderTimes = 1;
 
-		InputAdapter screenInputProcessor = new InputAdapter() {
-			@Override
-			public boolean keyUp(int keycode) {
-				if (keycode == Keys.BACK || keycode == Keys.ESCAPE) {
-					BlendingPerformanceTestScreen.this.parent.backToSelection();
-				}
-				return super.keyUp(keycode);
-			}
-
-			@Override
-			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-				// if stage invisible, then show it for a while...
-				stageHideTimeout = timeToHide;
-				stage.getRoot().setVisible(true);
-				return super.touchUp(screenX, screenY, pointer, button);
-			}
-		};
-
 		skinAtlas = new TextureAtlas(Gdx.files.internal("data/ui/uiskin.atlas"));
 		skin = new Skin(Gdx.files.internal("data/ui/uiskin.json"), skinAtlas);
 
 		stage = new Stage(width, height, false);
-		Gdx.input.setInputProcessor(new InputMultiplexer(screenInputProcessor, stage));
-
-		Table optionsContainer = new Window("Options", skin);
+	
+		Table optionsContainer = new Table();
 		optionsContainer.setTransform(false);
 
-		optionsContainer.setSize(width * 0.8f, height * 0.8f);
-		optionsContainer.setPosition(width * 0.1f, height * 0.1f);
-
 		{
-			// add intermediate container...
-
-			// add some custom stuff
-			
 			{
 				final CheckBox actor = new CheckBox("Texture1: " + textForBoolean(smallTexture1), skin);
 				actor.setName("Texture1");
@@ -123,7 +93,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 				});
 				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
 			}
-			
+
 			{
 				final CheckBox actor = new CheckBox("Texture2: " + textForBoolean(smallTexture2), skin);
 				actor.setName("Texture2");
@@ -238,48 +208,28 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		}
 
-		optionsContainer.row();
-
-		{
-			TextButton textButton = new TextButton("HIDE", skin);
-
-			textButton.addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					super.clicked(event, x, y);
-					stage.getRoot().setVisible(false);
-				}
-			});
-
-			optionsContainer.add(textButton).center().bottom().colspan(5).padLeft(10f).padRight(10f).expandX().fillX().padBottom(20f);
-		}
-
-		optionsContainer.row();
-
-		{
-			TextButton textButton = new TextButton("MENU", skin);
-
-			textButton.addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					super.clicked(event, x, y);
-					BlendingPerformanceTestScreen.this.parent.backToSelection();
-				}
-			});
-
-			optionsContainer.add(textButton).center().bottom().colspan(5).padLeft(10f).padRight(10f).expandX().fillX();
-		}
-
-		stage.addActor(optionsContainer);
-
+		Table baseWindowContainer = new TestBaseWindow("Options", skin, parent);
+		
+		baseWindowContainer.setTransform(false);
+		baseWindowContainer.setSize(width * 0.8f, height * 0.8f);
+		baseWindowContainer.setPosition(width * 0.1f, height * 0.1f);
+		
+		stage.addActor(baseWindowContainer);
+		
+		Table innerContainer = (Table) baseWindowContainer.findActor(TestBaseWindow.INNER_CONTAINER_NAME);
+		innerContainer.add(optionsContainer).fill().expand();
+		
 		stage.getRoot().setVisible(false);
-		stageHideTimeout = 0f;
+		
+		Gdx.input.setInputProcessor(new InputMultiplexer(new ShowStageInputProcessor(stage, parent), stage));
+		
+		Gdx.input.setCatchBackKey(true);
 	}
 
 	private TextureAtlas reloadTextureAtlas(boolean smallTexture, TextureAtlas atlas) {
 		if (atlas != null)
 			atlas.dispose();
-		
+
 		if (!smallTexture)
 			return new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
 		else
@@ -316,8 +266,8 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		else
 			spriteBatch.disableBlending();
 
-		int rt = !twoTextures ? renderTimes : Math.round(((float)renderTimes) / 2f);
-		
+		int rt = !twoTextures ? renderTimes : Math.round(((float) renderTimes) / 2f);
+
 		if (!multipleBatches) {
 			spriteBatch.begin();
 			Gdx.gl.glDepthMask(depthFunc);
@@ -346,9 +296,6 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 	@Override
 	public void update() {
-		stageHideTimeout -= Gdx.graphics.getDeltaTime();
-		if (stageHideTimeout < 0f)
-			stage.getRoot().setVisible(false);
 		stage.act();
 	}
 

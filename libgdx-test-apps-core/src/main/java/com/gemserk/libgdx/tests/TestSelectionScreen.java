@@ -28,6 +28,7 @@ public class TestSelectionScreen extends TestScreen {
 	public TestSelectionScreen() {
 		screens = new HashMap<String, TestScreen>();
 		screens.put("BlendingPerformanceTest", new BlendingPerformanceTestScreen());
+		screens.put("Polygon batches with/without blending", new PolygonSpriteBatchTestScreen());
 	}
 	
 	@Override
@@ -75,6 +76,8 @@ public class TestSelectionScreen extends TestScreen {
 		stage.addActor(container);
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+		
+		Gdx.input.setCatchBackKey(false);
 	}
 	
 	@Override
