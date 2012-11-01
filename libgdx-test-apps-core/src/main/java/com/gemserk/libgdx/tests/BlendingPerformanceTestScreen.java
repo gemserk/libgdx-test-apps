@@ -316,7 +316,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		else
 			spriteBatch.disableBlending();
 
-		int rt = !twoTextures ? renderTimes : Math.round(renderTimes / 2);
+		int rt = !twoTextures ? renderTimes : Math.round(((float)renderTimes) / 2f);
 		
 		if (!multipleBatches) {
 			spriteBatch.begin();
