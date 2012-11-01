@@ -155,7 +155,6 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 			optionsContainer.row();
 			{
-
 				int[] renderTimesDeltas = { -10, -1, 1, 10 };
 				for (int i = 0; i < renderTimesDeltas.length; i++) {
 					final int renderTimeDelta = renderTimesDeltas[i];
