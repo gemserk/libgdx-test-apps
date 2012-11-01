@@ -217,7 +217,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		stage.addActor(baseWindowContainer);
 		
 		Table innerContainer = (Table) baseWindowContainer.findActor(TestBaseWindow.INNER_CONTAINER_NAME);
-		innerContainer.add(optionsContainer).fill().expand();
+		innerContainer.add(optionsContainer).fill().expand().padTop(10f);
 		
 		stage.getRoot().setVisible(false);
 		
