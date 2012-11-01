@@ -29,6 +29,10 @@ public class GenerateTextureAtlases {
 		settings.paddingX = 0;
 		settings.paddingY = 0;
 		TexturePacker2.process(settings, "../assets/small", "src/main/resources/data/images", "small");
+		
+		settings.paddingX = 2;
+		settings.paddingY = 2;
+		TexturePacker2.process(settings, "../assets/polygon", "src/main/resources/data/images", "polygon");
 	}
 
 }
