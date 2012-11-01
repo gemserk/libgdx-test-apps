@@ -55,9 +55,11 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		treesSprite = atlas1.createSprite("trees");
 		treesSprite.setSize(width, height);
+		treesSprite.setColor(1,1,1,0.2f);
 
 		treesSprite2 = atlas2.createSprite("trees");
 		treesSprite2.setSize(width, height);
+		treesSprite2.setColor(1,1,1,0.2f);
 
 		InputAdapter screenInputProcessor = new InputAdapter() {
 			@Override
