@@ -28,6 +28,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	Stage stage;
 
 	Sprite treesSprite;
+	Sprite treesSprite2;
 
 	final float timeToHide = 5f;
 
@@ -35,10 +36,12 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	boolean depthFunc;
 	boolean multipleBatches;
 	boolean twoTextures;
+	
+	boolean smallTexture1;
+	boolean smallTexture2;
 
 	int renderTimes;
 	float stageHideTimeout;
-	private Sprite treesSprite2;
 
 	@Override
 	public void create() {
@@ -50,16 +53,23 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		spriteBatch = new SpriteBatch();
 
-		atlas1 = new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
-		atlas2 = new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
-
+		atlas1 = reloadTextureAtlas(false, atlas1);
 		treesSprite = atlas1.createSprite("trees");
 		treesSprite.setSize(width, height);
-		treesSprite.setColor(1,1,1,0.2f);
+		treesSprite.setColor(1, 1, 1, 0.2f);
 
+		atlas2 = reloadTextureAtlas(false, atlas2);
 		treesSprite2 = atlas2.createSprite("trees");
 		treesSprite2.setSize(width, height);
-		treesSprite2.setColor(1,1,1,0.2f);
+		treesSprite2.setColor(1, 1, 1, 0.2f);
+
+		blending = true;
+		depthFunc = false;
+		multipleBatches = false;
+		twoTextures = false;
+		smallTexture1 = false;
+		smallTexture2 = false;
+		renderTimes = 1;
 
 		InputAdapter screenInputProcessor = new InputAdapter() {
 			@Override
@@ -79,12 +89,6 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 			}
 		};
 
-		blending = true;
-		depthFunc = false;
-		multipleBatches = false;
-		twoTextures = false;
-		renderTimes = 1;
-
 		skinAtlas = new TextureAtlas(Gdx.files.internal("data/ui/uiskin.atlas"));
 		skin = new Skin(Gdx.files.internal("data/ui/uiskin.json"), skinAtlas);
 
@@ -101,6 +105,44 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 			// add intermediate container...
 
 			// add some custom stuff
+			
+			{
+				final CheckBox actor = new CheckBox("Texture1: " + textForBoolean(smallTexture1), skin);
+				actor.setName("Texture1");
+				actor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						smallTexture1 = !smallTexture1;
+						atlas1 = reloadTextureAtlas(smallTexture1, atlas1);
+						treesSprite = atlas1.createSprite("trees");
+						treesSprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+						treesSprite.setColor(1, 1, 1, 0.2f);
+						actor.setText("Texture1: " + textForBoolean(smallTexture1));
+					}
+				});
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+			}
+			
+			{
+				final CheckBox actor = new CheckBox("Texture2: " + textForBoolean(smallTexture2), skin);
+				actor.setName("Texture2");
+				actor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						super.clicked(event, x, y);
+						smallTexture2 = !smallTexture2;
+						atlas2 = reloadTextureAtlas(smallTexture2, atlas2);
+						treesSprite2 = atlas2.createSprite("trees");
+						treesSprite2.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+						treesSprite2.setColor(1, 1, 1, 0.2f);
+						actor.setText("Texture2: " + textForBoolean(smallTexture2));
+					}
+				});
+				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
+			}
+
+			optionsContainer.row();
 
 			{
 				final CheckBox actor = new CheckBox("Blending: " + textForBoolean(blending), skin);
@@ -161,7 +203,6 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 					optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f);
 				}
 			}
-			
 
 			optionsContainer.row();
 
@@ -233,6 +274,17 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 
 		stage.getRoot().setVisible(false);
 		stageHideTimeout = 0f;
+	}
+
+	private TextureAtlas reloadTextureAtlas(boolean smallTexture, TextureAtlas atlas) {
+		if (atlas != null)
+			atlas.dispose();
+		atlas = null;
+		
+		if (!smallTexture)
+			return new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
+		else
+			return new TextureAtlas(Gdx.files.internal("data/images/small.atlas"));
 	}
 
 	private void updateRenderTimes() {

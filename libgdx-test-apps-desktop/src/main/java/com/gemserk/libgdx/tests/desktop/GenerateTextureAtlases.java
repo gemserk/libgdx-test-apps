@@ -25,6 +25,10 @@ public class GenerateTextureAtlases {
 		settings.pot = true;
 		settings.rotation = true;
 		TexturePacker2.process(settings, "../assets/images", "src/main/resources/data/images", "images");
+		
+		settings.paddingX = 0;
+		settings.paddingY = 0;
+		TexturePacker2.process(settings, "../assets/small", "src/main/resources/data/images", "small");
 	}
 
 }
