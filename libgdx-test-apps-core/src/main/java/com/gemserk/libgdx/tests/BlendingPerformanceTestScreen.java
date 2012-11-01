@@ -279,7 +279,6 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 	private TextureAtlas reloadTextureAtlas(boolean smallTexture, TextureAtlas atlas) {
 		if (atlas != null)
 			atlas.dispose();
-		atlas = null;
 		
 		if (!smallTexture)
 			return new TextureAtlas(Gdx.files.internal("data/images/images.atlas"));
@@ -317,10 +316,12 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 		else
 			spriteBatch.disableBlending();
 
+		int rt = !twoTextures ? renderTimes : Math.round(renderTimes / 2);
+		
 		if (!multipleBatches) {
 			spriteBatch.begin();
 			Gdx.gl.glDepthMask(depthFunc);
-			for (int i = 0; i < renderTimes; i++) {
+			for (int i = 0; i < rt; i++) {
 				treesSprite.draw(spriteBatch);
 				if (twoTextures) {
 					treesSprite2.draw(spriteBatch);
@@ -328,7 +329,7 @@ public class BlendingPerformanceTestScreen extends TestScreen {
 			}
 			spriteBatch.end();
 		} else {
-			for (int i = 0; i < renderTimes; i++) {
+			for (int i = 0; i < rt; i++) {
 				spriteBatch.begin();
 				Gdx.gl.glDepthMask(depthFunc);
 				treesSprite.draw(spriteBatch);
