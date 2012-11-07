@@ -53,7 +53,7 @@ public class MeshSprite implements MeshSpriteInterface {
 		this.texCoords = texCoords;
 		this.texture = texture;
 		this.bounds = new Rectangle();
-		this.color = new Color();
+		this.color = new Color(1f, 1f, 1f, 1f);
 
 		// calculate mesh center
 
