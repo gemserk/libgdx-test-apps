@@ -176,10 +176,6 @@ public class PolygonSpriteBatchTestScreen extends TestScreen {
 
 		while (!polygonSprites.isEmpty() && count > 0) {
 			polygonSprites.remove(0);
-			count--;
-		}
-
-		while (!sprites.isEmpty() && count > 0) {
 			sprites.remove(0);
 			count--;
 		}

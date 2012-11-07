@@ -132,9 +132,10 @@ public class MeshSpriteBatch {
 
 		if (blendingDisabled)
 			Gdx.gl.glDisable(GL20.GL_BLEND);
-		else
+		else {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
+			Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
+		}
 
 		updateDepthTest();
 
@@ -158,6 +159,7 @@ public class MeshSpriteBatch {
 		if (depthTestEnabled) {
 			Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 			Gdx.gl.glDepthMask(depthTestEnabled);
+			Gdx.gl.glDepthFunc(GL10.GL_LESS);
 		} else {
 			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 			Gdx.gl.glDepthMask(depthTestEnabled);
@@ -249,24 +251,25 @@ public class MeshSpriteBatch {
 		if (blendingDisabled)
 			return;
 
-		blendingDisabled = true;
-
 		if (drawing) {
-			Gdx.gl.glDisable(GL20.GL_BLEND);
 			flush();
+			Gdx.gl.glDisable(GL20.GL_BLEND);
 		}
+		
+		blendingDisabled = true;
 	}
 
 	public void enableBlending() {
 		if (!blendingDisabled)
 			return;
 
-		blendingDisabled = true;
-
 		if (drawing) {
-			Gdx.gl.glEnable(GL20.GL_BLEND);
 			flush();
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
 		}
+		
+		blendingDisabled = false;
 	}
 
 	public void setDepthTestEnabled(boolean enabled) {
@@ -277,8 +280,11 @@ public class MeshSpriteBatch {
 			return;
 
 		this.depthTestEnabled = enabled;
-		updateDepthTest();
-		flush();
+
+		if (drawing) {
+			flush();
+			updateDepthTest();
+		}
 	}
 
 	/**

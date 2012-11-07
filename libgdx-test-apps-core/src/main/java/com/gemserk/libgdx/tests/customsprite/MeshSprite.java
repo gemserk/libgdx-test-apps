@@ -25,7 +25,7 @@ public class MeshSprite implements MeshSpriteInterface {
 	/**
 	 * a float[] with the processed vertices located after transforming the sprite.
 	 */
-	public float[] finalVertices;
+	public float[] meshVertices;
 
 	public Rectangle bounds;
 
@@ -80,7 +80,7 @@ public class MeshSprite implements MeshSpriteInterface {
 
 		verticesCount = vertices.length / 2;
 
-		finalVertices = new float[verticesCount * vertexSize];
+		meshVertices = new float[verticesCount * vertexSize];
 
 		getVertices();
 
@@ -220,9 +220,12 @@ public class MeshSprite implements MeshSpriteInterface {
 
 	@Override
 	public float[] getVertices() {
-		if (!dirty)
-			return finalVertices;
+		if (dirty)
+			updateVertices();
+		return meshVertices;
+	}
 
+	private void updateVertices() {
 		int vertexIndex = 0;
 		int textureIndex = 0;
 
@@ -237,16 +240,16 @@ public class MeshSprite implements MeshSpriteInterface {
 		float maxx = -Float.MAX_VALUE;
 		float maxy = -Float.MAX_VALUE;
 
-		for (int i = 0; i < finalVertices.length; i += vertexSize) {
+		for (int i = 0; i < meshVertices.length; i += vertexSize) {
 			vector3.set(vertices[vertexIndex], vertices[vertexIndex + 1], 0f);
 			vector3.mul(matrix4);
 
 			float vx = vector3.x;
 			float vy = vector3.y;
 
-			finalVertices[i + 0] = vx;
-			finalVertices[i + 1] = vy;
-			finalVertices[i + 2] = z;
+			meshVertices[i + 0] = vx;
+			meshVertices[i + 1] = vy;
+			meshVertices[i + 2] = z;
 
 			if (minx > vx)
 				minx = vx;
@@ -257,9 +260,9 @@ public class MeshSprite implements MeshSpriteInterface {
 			if (maxy < vy)
 				maxy = vy;
 
-			finalVertices[i + positionSize] = color.toFloatBits();
-			finalVertices[i + positionSize + colorSize] = texCoords[textureIndex];
-			finalVertices[i + positionSize + colorSize + 1] = texCoords[textureIndex + 1];
+			meshVertices[i + positionSize] = color.toFloatBits();
+			meshVertices[i + positionSize + colorSize] = texCoords[textureIndex];
+			meshVertices[i + positionSize + colorSize + 1] = texCoords[textureIndex + 1];
 
 			vertexIndex += POSITION_SIZE_2D;
 			textureIndex += textureCoordinateSize;
@@ -271,7 +274,6 @@ public class MeshSprite implements MeshSpriteInterface {
 		bounds.height = maxy - miny;
 
 		dirty = false;
-		return finalVertices;
 	}
 
 	@Override
@@ -279,6 +281,10 @@ public class MeshSprite implements MeshSpriteInterface {
 		if (dirty)
 			getVertices();
 		return bounds;
+	}
+	
+	public float getZ() {
+		return z;
 	}
 
 	@Override
