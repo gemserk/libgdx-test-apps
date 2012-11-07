@@ -14,7 +14,9 @@ import com.badlogic.gdx.math.Matrix4;
 public class MeshSpriteBatch {
 
 	public static final int POSITION_SIZE = 3;
-	public static final int VERTEX_SIZE = POSITION_SIZE + 1 + 2;
+	public static final int COLOR_SIZE = 1;
+	public static final int TEXTURE_COORDINATE_SIZE = 2;
+	public static final int VERTEX_SIZE = POSITION_SIZE + COLOR_SIZE + TEXTURE_COORDINATE_SIZE;
 
 	private Mesh mesh;
 	private Mesh[] buffers;
@@ -169,7 +171,7 @@ public class MeshSpriteBatch {
 				shader.end();
 		}
 	}
-	
+
 	public void draw(Texture texture, float[] spriteVertices) {
 		this.draw(texture, spriteVertices, 0, spriteVertices.length);
 	}
@@ -231,7 +233,6 @@ public class MeshSpriteBatch {
 	}
 
 	public void disableBlending() {
-
 		if (blendingDisabled)
 			return;
 
@@ -244,7 +245,6 @@ public class MeshSpriteBatch {
 	}
 
 	public void enableBlending() {
-
 		if (!blendingDisabled)
 			return;
 

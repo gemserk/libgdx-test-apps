@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -29,9 +31,14 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 	Mesh mesh;
 
 	boolean blending;
-	private Sprite wormSprite;
+
+	Sprite wormSprite;
+	MeshSprite meshSprite;
 
 	OrthographicCamera camera;
+	MeshSpriteBatch meshSpriteBatch;
+
+	ShapeRenderer shapeRenderer;
 
 	@Override
 	public void create() {
@@ -57,11 +64,24 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		float[] localVertices = polygonRegion.getLocalVertices();
 		float[] textureCoords = polygonRegion.getTextureCoords();
 
+		float[] vertices = new float[(localVertices.length / 2) * 3];
+
+		// for (int i = 0; i < localVertices.length; i += 2) {
+		// meshBuilder.color(1f, 1f, 1f, 1f);
+		// meshBuilder.texCoord(textureCoords[i], textureCoords[i + 1]);
+		// meshBuilder.vertex(localVertices[i], localVertices[i + 1], -1f);
+		// }
+
 		for (int i = 0; i < localVertices.length; i += 2) {
-			meshBuilder.color(1f, 1f, 1f, 1f);
-			meshBuilder.texCoord(textureCoords[i], textureCoords[i + 1]);
-			meshBuilder.vertex(localVertices[i], localVertices[i + 1], -1f);
+			vertices[(i / 2) * 3] = localVertices[i];
+			vertices[(i / 2) * 3 + 1] = localVertices[i + 1];
+			vertices[(i / 2) * 3 + 2] = 0f;
 		}
+
+		meshSprite = new MeshSprite(vertices, textureCoords, wormSprite.getTexture());
+		meshSprite.setColor(1f, 1f, 1f, 1f);
+
+		meshSpriteBatch = new MeshSpriteBatch();
 
 		// for (int i = 0; i < localVertices.length; i += 2) {
 		// meshBuilder.color(1f, 1f, 1f, 1f);
@@ -103,6 +123,8 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(new ShowStageInputProcessor(stage, parent), stage));
 		Gdx.input.setCatchBackKey(true);
+
+		shapeRenderer = new ShapeRenderer();
 	}
 
 	@Override
@@ -119,32 +141,54 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		shaderProgram = null;
 		mesh.dispose();
 		mesh = null;
+		meshSpriteBatch.dispose();
+		meshSpriteBatch = null;
+		shapeRenderer.dispose();
+		shapeRenderer = null;
 	}
 
 	@Override
 	public void render() {
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		// Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
 		if (blending)
 			Gdx.gl.glEnable(GL10.GL_BLEND);
 		else
 			Gdx.gl.glDisable(GL10.GL_BLEND);
 
-		Gdx.gl.glEnable(GL10.GL_DEPTH_TEST);
-		Gdx.gl.glDepthMask(true);
-
-		Gdx.gl.glEnable(GL10.GL_TEXTURE_2D);
-		wormSprite.getTexture().bind();
-
-		shaderProgram.begin();
-		shaderProgram.setUniformMatrix("u_projectionViewMatrix", camera.combined);
-		checkError("error when binding shader");
-		mesh.render(shaderProgram, GL10.GL_TRIANGLES);
-		checkError("error when drawing triangles");
-		shaderProgram.end();
-		checkError("error when ending shader");
-
 		Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
+		Gdx.gl.glDepthMask(false);
+
+		//
+		// Gdx.gl.glEnable(GL10.GL_TEXTURE_2D);
+		// wormSprite.getTexture().bind();
+		//
+		// shaderProgram.begin();
+		// shaderProgram.setUniformMatrix("u_projectionViewMatrix", camera.combined);
+		// checkError("error when binding shader");
+		// mesh.render(shaderProgram, GL10.GL_TRIANGLES);
+		// checkError("error when drawing triangles");
+		// shaderProgram.end();
+		// checkError("error when ending shader");
+		// Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
+
+		meshSprite.setPosition(-200f, 0f);
+		meshSprite.setOrigin(-meshSprite.getWidth() * 0.5f, -meshSprite.getHeight() * 0.5f);
+		meshSprite.setRotation(50f);
+		// meshSprite.setScale(1f, 1f);
+		meshSprite.setSize(100f, 100f);
+
+		meshSpriteBatch.setProjectionMatrix(camera.combined);
+		meshSpriteBatch.begin();
+		meshSpriteBatch.draw(meshSprite.getTexture(), meshSprite.getVertices());
+		meshSpriteBatch.end();
+
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.begin(ShapeType.Line);
+		shapeRenderer.setColor(1f, 0f, 0f, 1f);
+		shapeRenderer.line(-200f, -1000f, -200f, 1000f);
+		shapeRenderer.end();
 
 		stage.draw();
 	}
