@@ -81,7 +81,7 @@ public class MeshSpriteBatch {
 		vertices = new float[size * VERTEX_SIZE];
 
 		mesh = this.buffers[0];
-
+		
 		if (Gdx.graphics.isGL20Available() && defaultShader == null) {
 			shader = createDefaultShader();
 			ownsShader = true;
