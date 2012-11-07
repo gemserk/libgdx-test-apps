@@ -8,10 +8,12 @@ import com.badlogic.gdx.math.Vector3;
 
 public class MeshSprite implements MeshSpriteInterface {
 
+	private static final int POSITION_SIZE_2D = 2;
+
 	public Texture texture;
 
 	/**
-	 * a float[] with 3 floats per vertex specifying x, y, z.
+	 * a float[] with 2 floats per vertex specifying x, y.
 	 */
 	public float[] vertices;
 
@@ -27,11 +29,16 @@ public class MeshSprite implements MeshSpriteInterface {
 
 	public Rectangle bounds;
 
+	/**
+	 * Stores the z location of the mesh sprite, to be used with zBuffer.
+	 */
+	public float z;
+
 	public float ox, oy;
-	public float x, y, z;
+	public float x, y;
 	public float angle;
 	public float sx, sy;
-	
+
 	public float width, height;
 
 	public Color color;
@@ -47,10 +54,14 @@ public class MeshSprite implements MeshSpriteInterface {
 
 	final Matrix4 matrix4 = new Matrix4();
 	final Vector3 vector3 = new Vector3();
-	
+
 	public MeshSprite(float[] vertices, float[] texCoords, Texture texture) {
-		this.vertices = vertices;
-		this.texCoords = texCoords;
+		this.vertices = new float[vertices.length];
+		this.texCoords = new float[texCoords.length];
+
+		System.arraycopy(vertices, 0, this.vertices, 0, vertices.length);
+		System.arraycopy(texCoords, 0, this.texCoords, 0, texCoords.length);
+
 		this.texture = texture;
 		this.bounds = new Rectangle();
 		this.color = new Color(1f, 1f, 1f, 1f);
@@ -67,7 +78,7 @@ public class MeshSprite implements MeshSpriteInterface {
 
 		vertexSize = positionSize + colorSize + textureCoordinateSize;
 
-		verticesCount = vertices.length / positionSize;
+		verticesCount = vertices.length / 2;
 
 		finalVertices = new float[verticesCount * vertexSize];
 
@@ -95,7 +106,7 @@ public class MeshSprite implements MeshSpriteInterface {
 		setX(x);
 		setY(y);
 	}
-	
+
 	@Override
 	public void setZ(float z) {
 		if (Float.compare(this.z, z) == 0)
@@ -103,7 +114,7 @@ public class MeshSprite implements MeshSpriteInterface {
 		this.z = z;
 		dirty = true;
 	}
-	
+
 	@Override
 	public void setX(float x) {
 		if (Float.compare(this.x, x) == 0)
@@ -227,7 +238,7 @@ public class MeshSprite implements MeshSpriteInterface {
 		float maxy = -Float.MAX_VALUE;
 
 		for (int i = 0; i < finalVertices.length; i += vertexSize) {
-			vector3.set(vertices[vertexIndex], vertices[vertexIndex + 1], vertices[vertexIndex + 2]);
+			vector3.set(vertices[vertexIndex], vertices[vertexIndex + 1], 0f);
 			vector3.mul(matrix4);
 
 			float vx = vector3.x;
@@ -250,8 +261,8 @@ public class MeshSprite implements MeshSpriteInterface {
 			finalVertices[i + positionSize + colorSize] = texCoords[textureIndex];
 			finalVertices[i + positionSize + colorSize + 1] = texCoords[textureIndex + 1];
 
-			vertexIndex += 3;
-			textureIndex += 2;
+			vertexIndex += POSITION_SIZE_2D;
+			textureIndex += textureCoordinateSize;
 		}
 
 		bounds.x = minx;

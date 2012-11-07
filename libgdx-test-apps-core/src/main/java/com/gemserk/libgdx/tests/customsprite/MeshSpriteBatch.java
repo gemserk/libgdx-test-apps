@@ -127,17 +127,14 @@ public class MeshSpriteBatch {
 
 	public void begin() {
 		if (drawing)
-			throw new IllegalStateException("you have to call PolygonSpriteBatch.end() first");
+			throw new IllegalStateException("you have to call end() first");
 		renderCalls = 0;
-
-		// Gdx.gl.glDepthMask(false);
-
-		Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
 
 		if (blendingDisabled)
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 		else
 			Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
 
 		updateDepthTest();
 
@@ -169,7 +166,7 @@ public class MeshSpriteBatch {
 
 	public void end() {
 		if (!drawing)
-			throw new IllegalStateException("PolygonSpriteBatch.begin must be called before end.");
+			throw new IllegalStateException("begin must be called before end.");
 		if (idx > 0)
 			flush();
 		lastTexture = null;
@@ -278,7 +275,7 @@ public class MeshSpriteBatch {
 
 		if (!this.depthTestEnabled && !enabled)
 			return;
-		
+
 		this.depthTestEnabled = enabled;
 		updateDepthTest();
 		flush();

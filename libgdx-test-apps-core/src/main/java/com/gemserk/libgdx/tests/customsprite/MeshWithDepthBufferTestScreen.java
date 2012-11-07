@@ -87,18 +87,7 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 	}
 
 	private MeshSprite createMeshSprite(PolygonRegion wormInsidePolygon, Texture texture) {
-		float[] localVertices = wormInsidePolygon.getLocalVertices();
-		float[] textureCoords = wormInsidePolygon.getTextureCoords();
-
-		float[] vertices = new float[(localVertices.length / 2) * 3];
-
-		for (int i = 0; i < localVertices.length; i += 2) {
-			vertices[(i / 2) * 3] = localVertices[i];
-			vertices[(i / 2) * 3 + 1] = localVertices[i + 1];
-			vertices[(i / 2) * 3 + 2] = 0f;
-		}
-
-		return new MeshSprite(vertices, textureCoords, texture);
+		return new MeshSprite(wormInsidePolygon.getLocalVertices(), wormInsidePolygon.getTextureCoords(), texture);
 	}
 
 	@Override
@@ -120,19 +109,7 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 	@Override
 	public void render() {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		// Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		// if (blending)
-		// meshSpriteBatch.enableBlending();
-		// else
-		// meshSpriteBatch.disableBlending();
-
-		// meshWormInsideSprite.setPosition(-200f, 0f);
-		// meshWormInsideSprite.setOrigin(-meshWormInsideSprite.getWidth() * 0.5f, -meshWormInsideSprite.getHeight() * 0.5f);
-		// meshWormInsideSprite.setRotation(meshWormInsideSprite.getRotation() + 0.1f);
-		// meshSprite.setScale(1f, 1f);
-		// meshSprite.setSize(100f, 100f);
-		
 		meshWormInsideSprite.setZ(0f);
 		meshWormOutsideSprite.setZ(0f);
 
@@ -151,20 +128,8 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		meshSpriteBatch.setDepthTestEnabled(false);
 
-		// shapeRenderer.setProjectionMatrix(camera.combined);
-		// shapeRenderer.begin(ShapeType.Line);
-		// shapeRenderer.setColor(1f, 0f, 0f, 1f);
-		// shapeRenderer.line(-200f, -1000f, -200f, 1000f);
-		// shapeRenderer.end();
-
 		stage.draw();
 	}
-
-	// private void checkError(String errorString) {
-	// int error = Gdx.gl.glGetError();
-	// if (error != GL10.GL_NO_ERROR)
-	// throw new RuntimeException(errorString + " , error:" + error);
-	// }
 
 	@Override
 	public void update() {
