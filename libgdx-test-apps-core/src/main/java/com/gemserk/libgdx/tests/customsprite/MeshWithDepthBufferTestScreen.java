@@ -217,7 +217,7 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		while (!opaqueSprites.isEmpty() && count > 0) {
 			opaqueSprites.remove(0);
-			transparentSprites.remove(0);
+			transparentSprites.remove(transparentSprites.size() - 1);
 			count--;
 		}
 
