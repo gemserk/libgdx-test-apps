@@ -2,6 +2,7 @@ package com.gemserk.libgdx.tests.customsprite;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -342,4 +343,48 @@ public class MeshSprite implements MeshSpriteInterface {
 		return texture;
 	}
 
+	private static final float[] tmpVertices = new float[6 * 2];
+	private static final float[] tmpTexCoords = new float[6 * 2];
+	
+	public static MeshSprite fromSprite(Sprite sprite) {
+
+		tmpVertices[0] = sprite.getX();
+		tmpVertices[0 + 1] = sprite.getY();
+
+		tmpVertices[2] = sprite.getX();
+		tmpVertices[2 + 1] = sprite.getY() + sprite.getHeight();
+
+		tmpVertices[4] = sprite.getX() + sprite.getWidth();
+		tmpVertices[4 + 1] = sprite.getY() + sprite.getHeight();
+
+		tmpVertices[6] = sprite.getX();
+		tmpVertices[6 + 1] = sprite.getY();
+
+		tmpVertices[8] = sprite.getX() + sprite.getWidth();
+		tmpVertices[8 + 1] = sprite.getY() + sprite.getHeight();
+
+		tmpVertices[10] = sprite.getX() + sprite.getWidth();
+		tmpVertices[10 + 1] = sprite.getY();
+
+		tmpTexCoords[0] = sprite.getU();
+		tmpTexCoords[1] = sprite.getV2();
+
+		tmpTexCoords[2] = sprite.getU();
+		tmpTexCoords[3] = sprite.getV();
+
+		tmpTexCoords[4] = sprite.getU2();
+		tmpTexCoords[5] = sprite.getV();
+		
+		tmpTexCoords[6] = sprite.getU();
+		tmpTexCoords[7] = sprite.getV2();
+
+		tmpTexCoords[8] = sprite.getU2();
+		tmpTexCoords[9] = sprite.getV();
+
+		tmpTexCoords[10] = sprite.getU2();
+		tmpTexCoords[11] = sprite.getV2();
+
+		return new MeshSprite(tmpVertices, tmpTexCoords, sprite.getTexture());
+	}
+	
 }
