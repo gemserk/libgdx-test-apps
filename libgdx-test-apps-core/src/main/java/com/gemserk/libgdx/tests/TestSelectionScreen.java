@@ -1,6 +1,6 @@
 package com.gemserk.libgdx.tests;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
@@ -16,21 +16,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.gemserk.libgdx.tests.customsprite.MeshWithDepthBufferTestScreen;
 
 public class TestSelectionScreen extends TestScreen {
 
 	private Skin skin;
 	private TextureAtlas atlas;
 	private Stage stage;
-	
+
 	Map<String, TestScreen> screens;
-	
+
 	public TestSelectionScreen() {
-		screens = new HashMap<String, TestScreen>();
+		screens = new LinkedHashMap<String, TestScreen>();
 		screens.put("BlendingPerformanceTest", new BlendingPerformanceTestScreen());
 		screens.put("Polygon batches with/without blending", new PolygonSpriteBatchTestScreen());
+		screens.put("Mesh Sprite implementation", new MeshWithDepthBufferTestScreen());
 	}
-	
+
 	@Override
 	public void create() {
 		super.create();
@@ -60,26 +62,26 @@ public class TestSelectionScreen extends TestScreen {
 
 		container.add(scrollPane).pad(10f).expand().fill();
 		container.row();
-		
+
 		TextButton startButton = new TextButton("START", skin);
 		startButton.setTransform(false);
-		startButton.addListener(new ClickListener() { 
+		startButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				parent.setTestScreen(screens.get(list.getSelection()));
 			}
 		});
-		
+
 		container.add(startButton).center().expandX().fillX();
 
 		stage.addActor(container);
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-		
+
 		Gdx.input.setCatchBackKey(false);
 	}
-	
+
 	@Override
 	public void dispose() {
 		super.dispose();
