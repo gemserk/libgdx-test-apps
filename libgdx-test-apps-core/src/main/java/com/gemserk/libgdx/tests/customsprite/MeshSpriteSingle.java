@@ -356,4 +356,9 @@ public class MeshSpriteSingle implements MeshSpriteInterface {
 		TextureRegion textureRegion = meshRegion.getRegion();
 		return textureRegion == null ? null : textureRegion.getTexture();
 	}
+
+	@Override
+	public void setZ(float z) {
+		throw new UnsupportedOperationException("not implemented yet");
+	}
 }

@@ -34,6 +34,8 @@ public class MeshSpriteBatch {
 	private boolean drawing = false;
 
 	private boolean blendingDisabled = false;
+	private boolean depthTestEnabled;
+
 	private int blendSrcFunc = GL11.GL_SRC_ALPHA;
 	private int blendDstFunc = GL11.GL_ONE_MINUS_SRC_ALPHA;
 
@@ -85,6 +87,8 @@ public class MeshSpriteBatch {
 			ownsShader = true;
 		} else
 			shader = defaultShader;
+
+		depthTestEnabled = false;
 	}
 
 	static public ShaderProgram createDefaultShader() {
@@ -135,6 +139,8 @@ public class MeshSpriteBatch {
 		else
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 
+		updateDepthTest();
+
 		if (Gdx.graphics.isGL20Available()) {
 			if (customShader != null)
 				customShader.begin();
@@ -149,6 +155,16 @@ public class MeshSpriteBatch {
 		idx = 0;
 		lastTexture = null;
 		drawing = true;
+	}
+
+	private void updateDepthTest() {
+		if (depthTestEnabled) {
+			Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+			Gdx.gl.glDepthMask(depthTestEnabled);
+		} else {
+			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+			Gdx.gl.glDepthMask(depthTestEnabled);
+		}
 	}
 
 	public void end() {
@@ -254,6 +270,18 @@ public class MeshSpriteBatch {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			flush();
 		}
+	}
+
+	public void setDepthTestEnabled(boolean enabled) {
+		if (this.depthTestEnabled && enabled)
+			return;
+
+		if (!this.depthTestEnabled && !enabled)
+			return;
+		
+		this.depthTestEnabled = enabled;
+		updateDepthTest();
+		flush();
 	}
 
 	/**

@@ -149,16 +149,13 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 	@Override
 	public void render() {
-		// Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		 Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+//		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
 		if (blending)
-			Gdx.gl.glEnable(GL10.GL_BLEND);
+			meshSpriteBatch.enableBlending();
 		else
-			Gdx.gl.glDisable(GL10.GL_BLEND);
-
-		Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
-		Gdx.gl.glDepthMask(false);
+			meshSpriteBatch.disableBlending();
 
 		//
 		// Gdx.gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -171,24 +168,28 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		// checkError("error when drawing triangles");
 		// shaderProgram.end();
 		// checkError("error when ending shader");
-		// Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
 
 		meshSprite.setPosition(-200f, 0f);
 		meshSprite.setOrigin(-meshSprite.getWidth() * 0.5f, -meshSprite.getHeight() * 0.5f);
-		meshSprite.setRotation(50f);
+		meshSprite.setRotation(meshSprite.getRotation() + 0.1f);
 		// meshSprite.setScale(1f, 1f);
-		meshSprite.setSize(100f, 100f);
+		// meshSprite.setSize(100f, 100f);
+		meshSprite.setZ(0f);
+
+		meshSpriteBatch.setDepthTestEnabled(true);
 
 		meshSpriteBatch.setProjectionMatrix(camera.combined);
 		meshSpriteBatch.begin();
 		meshSpriteBatch.draw(meshSprite.getTexture(), meshSprite.getVertices());
 		meshSpriteBatch.end();
+		
+		Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
 
-		shapeRenderer.setProjectionMatrix(camera.combined);
-		shapeRenderer.begin(ShapeType.Line);
-		shapeRenderer.setColor(1f, 0f, 0f, 1f);
-		shapeRenderer.line(-200f, -1000f, -200f, 1000f);
-		shapeRenderer.end();
+		// shapeRenderer.setProjectionMatrix(camera.combined);
+		// shapeRenderer.begin(ShapeType.Line);
+		// shapeRenderer.setColor(1f, 0f, 0f, 1f);
+		// shapeRenderer.line(-200f, -1000f, -200f, 1000f);
+		// shapeRenderer.end();
 
 		stage.draw();
 	}

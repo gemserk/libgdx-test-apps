@@ -28,10 +28,10 @@ public class MeshSprite implements MeshSpriteInterface {
 	public Rectangle bounds;
 
 	public float ox, oy;
-	public float x, y;
+	public float x, y, z;
 	public float angle;
 	public float sx, sy;
-
+	
 	public float width, height;
 
 	public Color color;
@@ -47,7 +47,7 @@ public class MeshSprite implements MeshSpriteInterface {
 
 	final Matrix4 matrix4 = new Matrix4();
 	final Vector3 vector3 = new Vector3();
-
+	
 	public MeshSprite(float[] vertices, float[] texCoords, Texture texture) {
 		this.vertices = vertices;
 		this.texCoords = texCoords;
@@ -95,7 +95,15 @@ public class MeshSprite implements MeshSpriteInterface {
 		setX(x);
 		setY(y);
 	}
-
+	
+	@Override
+	public void setZ(float z) {
+		if (Float.compare(this.z, z) == 0)
+			return;
+		this.z = z;
+		dirty = true;
+	}
+	
 	@Override
 	public void setX(float x) {
 		if (Float.compare(this.x, x) == 0)
@@ -227,7 +235,7 @@ public class MeshSprite implements MeshSpriteInterface {
 
 			finalVertices[i + 0] = vx;
 			finalVertices[i + 1] = vy;
-			finalVertices[i + 2] = vector3.z;
+			finalVertices[i + 2] = z;
 
 			if (minx > vx)
 				minx = vx;

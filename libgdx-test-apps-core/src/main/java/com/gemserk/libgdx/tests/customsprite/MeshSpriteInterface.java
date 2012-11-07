@@ -9,6 +9,8 @@ public interface MeshSpriteInterface {
 	void setBounds(float x, float y, float width, float height);
 
 	void setSize(float width, float height);
+	
+	void setZ(float z);
 
 	void setPosition(float x, float y);
 
