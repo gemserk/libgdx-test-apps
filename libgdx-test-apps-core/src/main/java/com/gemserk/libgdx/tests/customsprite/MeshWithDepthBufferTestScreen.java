@@ -88,11 +88,11 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		opaqueSprites = new ArrayList<MeshSprite>();
 		transparentSprites = new ArrayList<MeshSprite>();
-		
+
 		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-inside"), wormSprite);
 		borderPolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-border"), wormSprite);
 
-		// generateElements(100);
+		generateElements(100);
 
 		meshSpriteBatch = new MeshSpriteBatch();
 

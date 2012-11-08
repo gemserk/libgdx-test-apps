@@ -8,6 +8,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.IntArray;
 
 public class PolygonDefinition {
 
@@ -33,7 +34,7 @@ public class PolygonDefinition {
 		this.indices = indices;
 	}
 
-	private static int indexOf(float x, float y, float[] vertices) {
+	public static int indexOf(float x, float y, float[] vertices) {
 		for (int i = 0; i < vertices.length; i += 2) {
 			float vx = vertices[i];
 			float vy = vertices[i + 1];
@@ -42,15 +43,59 @@ public class PolygonDefinition {
 		}
 		return -1;
 	}
-	
-	private static short[] removeDuplicatedIndices(float[] vertices, short[] indices) {
+
+	private static int indexOf(int index, short[] indices) {
+		for (int i = 0; i < indices.length; i++) {
+			if (indices[i] == index)
+				return i;
+		}
+		return -1;
+	}
+
+	public static int removeDuplicatedIndices(float[] vertices, float[] texCoords, short[] indices) {
+		IntArray duplicatedIndices = new IntArray();
+		for (int i = 0; i < vertices.length; i += 2) {
+			int index = i / 2;
+			if (indexOf(index, indices) == -1) {
+				duplicatedIndices.add(index);
+				// vertices[i] = -Float.MAX_VALUE;
+				// vertices[i + 1] = -Float.MAX_VALUE;
+			}
+		}
+
+		while (duplicatedIndices.size > 0) {
+			int dupIndex = duplicatedIndices.pop();
+
+			for (int i = 0; i < indices.length; i++) {
+				short index = indices[i];
+				if (index > dupIndex) {
+					indices[i] = (short) (indices[i] - 1);
+
+					vertices[indices[i] * 2] = vertices[index * 2];
+					vertices[indices[i] * 2 + 1] = vertices[index * 2 + 1];
+
+					texCoords[indices[i] * 2] = texCoords[index * 2];
+					texCoords[indices[i] * 2 + 1] = texCoords[index * 2 + 1];
+				}
+			}
+		}
+
+		return duplicatedIndices.size;
+	}
+
+	public static short[] cleanIndices(float[] vertices, short[] indices) {
+		// IntArray duplicatedIndices = new IntArray();
 		for (int i = 0; i < indices.length; i++) {
 			short index = indices[i];
-			float x = vertices[2*index];
-			float y = vertices[2*index+1];
+			float x = vertices[2 * index];
+			float y = vertices[2 * index + 1];
 			int indexInVertices = indexOf(x, y, vertices);
-			indices[i] = (short) indexInVertices;
+			if (indexInVertices != index) {
+				// duplicatedIndices.add(index);
+				indices[i] = (short) indexInVertices;
+			}
 		}
+
 		return indices;
 	}
 
@@ -93,10 +138,21 @@ public class PolygonDefinition {
 					transformToRegionCoordinates(texCoords, region);
 				}
 			}
-			
-			indices = removeDuplicatedIndices(vertices, indices);
 
+			cleanIndices(vertices, indices);
 			return new PolygonDefinition(vertices, texCoords, indices);
+
+			// int duplicatedSize = removeDuplicatedIndices(vertices, texCoords, indices);
+			//
+			// int newSize = vertices.length - duplicatedSize * 2;
+			//
+			// float[] newVertices = new float[newSize];
+			// float[] newTexCoords = new float[newSize];
+			//
+			// System.arraycopy(vertices, 0, newVertices, 0, newSize);
+			// System.arraycopy(texCoords, 0, newTexCoords, 0, newSize);
+			//
+			// return new PolygonDefinition(newVertices, newTexCoords, indices);
 		} catch (IOException ex) {
 			throw new GdxRuntimeException("Error reading polygon shape file: " + file);
 		} finally {

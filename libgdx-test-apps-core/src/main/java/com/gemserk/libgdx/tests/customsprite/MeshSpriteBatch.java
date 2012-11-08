@@ -206,11 +206,11 @@ public class MeshSpriteBatch {
 
 		switchTexture(texture);
 
-		if (reachedVerticesLimit(length) || reachedIndicesLimit(indicesLength))
+		if (idx + length > vertices.length || indicesIndex + indicesLength > indices.length)
 			flush();
 
 		if (length > vertices.length)
-			throw new IllegalArgumentException("Can't handle so " + length + " vertices in one call, increase batch vertices size, current size " + vertices.length);
+			throw new IllegalArgumentException("Can't handle " + length + " vertices in one call, increase batch vertices size, current size is " + vertices.length);
 
 		System.arraycopy(spriteVertices, offset, vertices, idx, length);
 
@@ -224,14 +224,6 @@ public class MeshSpriteBatch {
 		indicesIndex += indicesLength;
 
 		idx += length;
-	}
-
-	private boolean reachedVerticesLimit(int length) {
-		return idx + length > vertices.length;
-	}
-	
-	private boolean reachedIndicesLimit(int length) {
-		return indicesIndex + length > indices.length;
 	}
 
 	private void flush() {
