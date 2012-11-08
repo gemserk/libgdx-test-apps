@@ -33,15 +33,26 @@ public class PolygonDefinition {
 		this.indices = indices;
 	}
 
-	// private static int indexOf(float x, float y, float error, float[] vertices) {
-	// for (int i = 0; i < vertices.length; i += 2) {
-	// float vx = vertices[i];
-	// float vy = vertices[i + 1];
-	// if (Float.compare(x, vx) == 0 && Float.compare(y, vy) == 0)
-	// return i / 2;
-	// }
-	// return -1;
-	// }
+	private static int indexOf(float x, float y, float[] vertices) {
+		for (int i = 0; i < vertices.length; i += 2) {
+			float vx = vertices[i];
+			float vy = vertices[i + 1];
+			if (Float.compare(x, vx) == 0 && Float.compare(y, vy) == 0)
+				return i / 2;
+		}
+		return -1;
+	}
+	
+	private static short[] removeDuplicatedIndices(float[] vertices, short[] indices) {
+		for (int i = 0; i < indices.length; i++) {
+			short index = indices[i];
+			float x = vertices[2*index];
+			float y = vertices[2*index+1];
+			int indexInVertices = indexOf(x, y, vertices);
+			indices[i] = (short) indexInVertices;
+		}
+		return indices;
+	}
 
 	public static PolygonDefinition loadPolygonDefinition(FileHandle file, TextureRegion region) {
 		String line;
@@ -82,6 +93,8 @@ public class PolygonDefinition {
 					transformToRegionCoordinates(texCoords, region);
 				}
 			}
+			
+			indices = removeDuplicatedIndices(vertices, indices);
 
 			return new PolygonDefinition(vertices, texCoords, indices);
 		} catch (IOException ex) {
