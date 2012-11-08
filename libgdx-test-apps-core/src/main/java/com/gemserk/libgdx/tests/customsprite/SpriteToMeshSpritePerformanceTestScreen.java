@@ -1,17 +1,13 @@
 package com.gemserk.libgdx.tests.customsprite;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,29 +21,7 @@ import com.gemserk.libgdx.tests.ShowStageInputProcessor;
 import com.gemserk.libgdx.tests.TestBaseWindow;
 import com.gemserk.libgdx.tests.TestScreen;
 
-public class MeshWithDepthBufferTestScreen extends TestScreen {
-
-	public static class MeshSpriteComparator implements Comparator<MeshSprite> {
-		@Override
-		public int compare(MeshSprite o1, MeshSprite o2) {
-			if (o1.getZ() > o2.getZ())
-				return -1;
-			if (o1.getZ() < o2.getZ())
-				return 1;
-			return 0;
-		}
-	}
-
-	public static class MeshSpriteInverseComparator implements Comparator<MeshSprite> {
-		@Override
-		public int compare(MeshSprite o1, MeshSprite o2) {
-			if (o1.getZ() > o2.getZ())
-				return 1;
-			if (o1.getZ() < o2.getZ())
-				return -1;
-			return 0;
-		}
-	}
+public class SpriteToMeshSpritePerformanceTestScreen extends TestScreen {
 
 	TextureAtlas skinAtlas;
 	TextureAtlas atlas;
@@ -59,14 +33,10 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 	OrthographicCamera camera;
 	MeshSpriteBatch meshSpriteBatch;
 
-	ShapeRenderer shapeRenderer;
-
-	ArrayList<MeshSprite> opaqueSprites;
-	ArrayList<MeshSprite> transparentSprites;
-
-	PolygonDefinition insidePolygonDefinition;
-	PolygonDefinition borderPolygonDefinition;
-	Texture texture;
+	ArrayList<MeshSprite> sprites;
+	
+	Sprite prototypeSprite;
+	PolygonDefinition polygonDefinition;
 
 	@Override
 	public void create() {
@@ -82,23 +52,18 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		atlas = new TextureAtlas(Gdx.files.internal("data/images/polygon.atlas"));
 
-		Sprite wormSprite = atlas.createSprite("worm");
-
-		texture = wormSprite.getTexture();
-
-		opaqueSprites = new ArrayList<MeshSprite>();
-		transparentSprites = new ArrayList<MeshSprite>();
+		prototypeSprite = atlas.createSprite("worm");
+		polygonDefinition = PolygonDefinition.fromSprite(prototypeSprite);
 		
-		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-inside"), wormSprite);
-		borderPolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-border"), wormSprite);
+		sprites = new ArrayList<MeshSprite>();
 
-		// generateElements(100);
+		generateElements(50);
 
 		meshSpriteBatch = new MeshSpriteBatch();
 
 		stage = new Stage(width, height, false);
 
-		blending = false;
+		blending = true;
 
 		Table optionsContainer = new Table();
 		optionsContainer.setTransform(false);
@@ -121,7 +86,7 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 			optionsContainer.row();
 
 			{
-				TextButton actor = new TextButton("Sprites: " + opaqueSprites.size(), skin);
+				TextButton actor = new TextButton("Sprites: " + sprites.size(), skin);
 				actor.setName("SpritesCount");
 				actor.setTouchable(Touchable.disabled);
 				optionsContainer.add(actor).padLeft(10f).padRight(10f).expandX().fillX().padBottom(10f).colspan(5);
@@ -170,60 +135,40 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(new ShowStageInputProcessor(stage, parent), stage));
 		Gdx.input.setCatchBackKey(true);
-
-		shapeRenderer = new ShapeRenderer();
 	}
 
 	private void generateElements(int count) {
 		for (int i = 0; i < count; i++) {
-			MeshSprite insideSprite = createMeshSprite(insidePolygonDefinition, texture);
-			MeshSprite borderSprite = createMeshSprite(borderPolygonDefinition, texture);
+			MeshSprite borderSprite = new MeshSprite(polygonDefinition.getVertices(), polygonDefinition.getTextureCoordinates(), 
+					polygonDefinition.getIndices(), prototypeSprite.getTexture());
 
-			float z = -MathUtils.random(camera.near, camera.far);
 			float x = MathUtils.random(-Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getWidth() * 0.5f);
 			float y = MathUtils.random(-Gdx.graphics.getHeight() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
 
-			// float angle = MathUtils.random(0f, 360f);
-
-			insideSprite.setZ(z);
-			borderSprite.setZ(z);
-
-			insideSprite.setPosition(x, y);
+			borderSprite.setZ(0f);
 			borderSprite.setPosition(x, y);
 
-			// insideSprite.setRotation(angle);
-			// borderSprite.setRotation(angle);
-
-			opaqueSprites.add(insideSprite);
-			transparentSprites.add(borderSprite);
+			sprites.add(borderSprite);
 		}
-
-		Collections.sort(opaqueSprites, new MeshSpriteComparator());
-		Collections.sort(transparentSprites, new MeshSpriteInverseComparator());
 
 		if (stage == null)
 			return;
 
 		TextButton button = (TextButton) stage.getRoot().findActor("SpritesCount");
 		if (button != null)
-			button.setText("Sprites: " + opaqueSprites.size());
+			button.setText("Sprites: " + sprites.size());
 	}
 
 	private void removeElements(int count) {
 
-		while (!opaqueSprites.isEmpty() && count > 0) {
-			opaqueSprites.remove(0);
-			transparentSprites.remove(transparentSprites.size() - 1);
+		while (!sprites.isEmpty() && count > 0) {
+			sprites.remove(0);
 			count--;
 		}
 
 		TextButton button = (TextButton) stage.getRoot().findActor("SpritesCount");
 		if (button != null)
-			button.setText("Sprites: " + opaqueSprites.size());
-	}
-
-	private MeshSprite createMeshSprite(PolygonDefinition polygonDef, Texture texture) {
-		return new MeshSprite(polygonDef.getVertices(), polygonDef.getTextureCoordinates(), polygonDef.getIndices(), texture);
+			button.setText("Sprites: " + sprites.size());
 	}
 
 	@Override
@@ -238,42 +183,25 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		atlas = null;
 		meshSpriteBatch.dispose();
 		meshSpriteBatch = null;
-		shapeRenderer.dispose();
-		shapeRenderer = null;
 	}
 
 	@Override
 	public void render() {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		// Gdx.gl.glClearDepthf(1f);
 
-		meshSpriteBatch.setDepthTestEnabled(true);
-		meshSpriteBatch.disableBlending();
-
-		meshSpriteBatch.setProjectionMatrix(camera.combined);
-		meshSpriteBatch.begin();
-		for (int i = 0; i < opaqueSprites.size(); i++) {
-			MeshSprite sprite = opaqueSprites.get(i);
-			// sprite.setZ(0f);
-			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
-		}
-		meshSpriteBatch.end();
+		meshSpriteBatch.setDepthTestEnabled(false);
 
 		if (blending)
 			meshSpriteBatch.enableBlending();
 		else
 			meshSpriteBatch.disableBlending();
 
+		meshSpriteBatch.setProjectionMatrix(camera.combined);
 		meshSpriteBatch.begin();
-
-		for (int i = 0; i < transparentSprites.size(); i++) {
-			MeshSprite sprite = transparentSprites.get(i);
-			// sprite.setZ(0f);
+		for (int i = 0; i < sprites.size(); i++) {
+			MeshSprite sprite = sprites.get(i);
 			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
 		}
-
-		meshSpriteBatch.setDepthTestEnabled(false);
-
 		meshSpriteBatch.end();
 
 		stage.draw();

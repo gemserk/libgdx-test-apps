@@ -86,7 +86,7 @@ public class MeshSpriteBatch {
 		indices = new short[size];
 
 		mesh = this.buffers[0];
-		mesh.setIndices(indices, 0, size);
+		// mesh.setIndices(indices);
 
 		if (Gdx.graphics.isGL20Available() && defaultShader == null) {
 			shader = createDefaultShader();
@@ -206,7 +206,7 @@ public class MeshSpriteBatch {
 
 		switchTexture(texture);
 
-		if (reachedVerticesLimit(length))
+		if (reachedVerticesLimit(length) || reachedIndicesLimit(indicesLength))
 			flush();
 
 		if (length > vertices.length)
@@ -229,6 +229,10 @@ public class MeshSpriteBatch {
 	private boolean reachedVerticesLimit(int length) {
 		return idx + length > vertices.length;
 	}
+	
+	private boolean reachedIndicesLimit(int length) {
+		return indicesIndex + length > indices.length;
+	}
 
 	private void flush() {
 		if (idx == 0)
@@ -242,18 +246,10 @@ public class MeshSpriteBatch {
 
 		lastTexture.bind();
 		mesh.setVertices(vertices, 0, idx);
-
-		mesh.getIndicesBuffer().position(0);
-		mesh.getIndicesBuffer().limit(indicesIndex);
-		
 		mesh.setIndices(indices, 0, indicesIndex);
 
-		// if (blendingDisabled) {
-		// Gdx.gl.glDisable(GL20.GL_BLEND);
-		// } else {
-		// Gdx.gl.glEnable(GL20.GL_BLEND);
-		// Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
-		// }
+		// mesh.getIndicesBuffer().position(0);
+		// mesh.getIndicesBuffer().limit(indicesIndex);
 
 		if (Gdx.graphics.isGL20Available()) {
 			if (customShader != null)

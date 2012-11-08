@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gemserk.libgdx.tests.customsprite.MeshWithDepthBufferTestScreen;
+import com.gemserk.libgdx.tests.customsprite.SpriteToMeshSpritePerformanceTestScreen;
 
 public class TestSelectionScreen extends TestScreen {
 
@@ -31,6 +32,7 @@ public class TestSelectionScreen extends TestScreen {
 		screens.put("BlendingPerformanceTest", new BlendingPerformanceTestScreen());
 		screens.put("Polygon batches with/without blending", new PolygonSpriteBatchTestScreen());
 		screens.put("Mesh Sprite implementation", new MeshWithDepthBufferTestScreen());
+		screens.put("Sprite to MeshSprite performance", new SpriteToMeshSpritePerformanceTestScreen());
 	}
 
 	@Override

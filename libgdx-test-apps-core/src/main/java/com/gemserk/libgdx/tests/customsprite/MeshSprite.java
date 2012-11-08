@@ -2,7 +2,6 @@ package com.gemserk.libgdx.tests.customsprite;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -16,22 +15,22 @@ public class MeshSprite implements MeshSpriteInterface {
 	/**
 	 * a float[] with 2 floats per vertex specifying x, y.
 	 */
-	public float[] vertices;
+	public final float[] vertices;
 
 	/**
 	 * a float[] with 2 floats per vertex specifying the texture coordinates u, v.
 	 */
-	public float[] texCoords;
+	public final float[] texCoords;
+
+	/**
+	 * a short[] with the indices of each vertex index, can be reused between different meshsprites.
+	 */
+	public final short[] indices;
 
 	/**
 	 * a float[] with the processed vertices located after transforming the sprite.
 	 */
 	public float[] meshVertices;
-
-	/**
-	 * a short[] with the indices of each vertex index, can be reused between different meshsprites.
-	 */
-	public short[] indices;
 
 	public Rectangle bounds;
 
@@ -62,12 +61,19 @@ public class MeshSprite implements MeshSpriteInterface {
 	final Vector3 vector3 = new Vector3();
 
 	public MeshSprite(float[] vertices, float[] texCoords, short[] indices, Texture texture) {
+		this.vertices = vertices;
+		this.texCoords = texCoords;
 		this.indices = indices;
-		this.vertices = new float[vertices.length];
-		this.texCoords = new float[texCoords.length];
 
-		System.arraycopy(vertices, 0, this.vertices, 0, vertices.length);
-		System.arraycopy(texCoords, 0, this.texCoords, 0, texCoords.length);
+		// these arrays will never be modified so they could be reused from outside maybe, instead of copying them inside here
+		// so we save memory and speed when creating the meshes if they are based in the same element.
+
+		// this.indices = new short[indices.length];
+		// this.vertices = new float[vertices.length];
+		// this.texCoords = new float[texCoords.length];
+		// System.arraycopy(vertices, 0, this.vertices, 0, vertices.length);
+		// System.arraycopy(texCoords, 0, this.texCoords, 0, texCoords.length);
+		// System.arraycopy(indices, 0, this.indices, 0, indices.length);
 
 		this.texture = texture;
 		this.bounds = new Rectangle();
@@ -351,46 +357,6 @@ public class MeshSprite implements MeshSpriteInterface {
 	@Override
 	public Texture getTexture() {
 		return texture;
-	}
-
-	private static final float[] tmpVertices = new float[4 * 2];
-	private static final float[] tmpTexCoords = new float[4 * 2];
-
-	public static MeshSprite fromSprite(Sprite sprite) {
-		short[] indices = new short[6];
-
-		tmpVertices[0] = sprite.getX();
-		tmpVertices[1] = sprite.getY();
-
-		tmpTexCoords[0] = sprite.getU();
-		tmpTexCoords[1] = sprite.getV2();
-
-		tmpVertices[2] = sprite.getX();
-		tmpVertices[3] = sprite.getY() + sprite.getHeight();
-		
-		tmpTexCoords[2] = sprite.getU();
-		tmpTexCoords[3] = sprite.getV();
-
-		tmpVertices[4] = sprite.getX() + sprite.getWidth();
-		tmpVertices[5] = sprite.getY() + sprite.getHeight();
-		
-		tmpTexCoords[4] = sprite.getU2();
-		tmpTexCoords[5] = sprite.getV();
-
-		tmpVertices[6] = sprite.getX() + sprite.getWidth();
-		tmpVertices[7] = sprite.getY();
-
-		tmpTexCoords[6] = sprite.getU2();
-		tmpTexCoords[7] = sprite.getV2();
-
-		indices[0] = 0;
-		indices[1] = 1;
-		indices[2] = 2;
-		indices[3] = 2;
-		indices[4] = 3;
-		indices[5] = 0;
-
-		return new MeshSprite(tmpVertices, tmpTexCoords, indices, sprite.getTexture());
 	}
 
 }

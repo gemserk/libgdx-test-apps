@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
@@ -12,11 +13,35 @@ public class PolygonDefinition {
 
 	private float[] texCoords;
 	private float[] vertices;
+	private short[] indices;
 
-	public PolygonDefinition(float[] vertices, float[] texCoords) {
+	public float[] getVertices() {
+		return vertices;
+	}
+
+	public float[] getTextureCoordinates() {
+		return texCoords;
+	}
+
+	public short[] getIndices() {
+		return indices;
+	}
+
+	public PolygonDefinition(float[] vertices, float[] texCoords, short[] indices) {
 		this.vertices = vertices;
 		this.texCoords = texCoords;
+		this.indices = indices;
 	}
+
+	// private static int indexOf(float x, float y, float error, float[] vertices) {
+	// for (int i = 0; i < vertices.length; i += 2) {
+	// float vx = vertices[i];
+	// float vy = vertices[i + 1];
+	// if (Float.compare(x, vx) == 0 && Float.compare(y, vy) == 0)
+	// return i / 2;
+	// }
+	// return -1;
+	// }
 
 	public static PolygonDefinition loadPolygonDefinition(FileHandle file, TextureRegion region) {
 		String line;
@@ -25,6 +50,7 @@ public class PolygonDefinition {
 		try {
 			float[] vertices = null;
 			float[] texCoords = null;
+			short[] indices = null;
 
 			while (true) {
 				line = reader.readLine();
@@ -39,6 +65,11 @@ public class PolygonDefinition {
 						vertices[i] = Float.parseFloat(verticesValues[i]);
 						vertices[i + 1] = Float.parseFloat(verticesValues[i + 1]);
 					}
+
+					indices = new short[vertices.length / 2];
+					for (int i = 0; i < indices.length; i++) {
+						indices[i] = (short) i;
+					}
 				} else if (line.startsWith("u")) {
 					// read in uvs
 					String[] texCoordsValues = line.substring(1).trim().split(",");
@@ -52,7 +83,7 @@ public class PolygonDefinition {
 				}
 			}
 
-			return new PolygonDefinition(vertices, texCoords);
+			return new PolygonDefinition(vertices, texCoords, indices);
 		} catch (IOException ex) {
 			throw new GdxRuntimeException("Error reading polygon shape file: " + file);
 		} finally {
@@ -73,12 +104,43 @@ public class PolygonDefinition {
 		}
 	}
 
-	public float[] getVertices() {
-		return vertices;
-	}
+	public static PolygonDefinition fromSprite(Sprite sprite) {
+		short[] indices = new short[6];
+		float[] vertices = new float[4 * 2];
+		float[] texCoords = new float[4 * 2];
 
-	public float[] getTextureCoordinates() {
-		return texCoords;
+		vertices[0] = sprite.getX();
+		vertices[1] = sprite.getY();
+
+		texCoords[0] = sprite.getU();
+		texCoords[1] = sprite.getV2();
+
+		vertices[2] = sprite.getX();
+		vertices[3] = sprite.getY() + sprite.getHeight();
+
+		texCoords[2] = sprite.getU();
+		texCoords[3] = sprite.getV();
+
+		vertices[4] = sprite.getX() + sprite.getWidth();
+		vertices[5] = sprite.getY() + sprite.getHeight();
+
+		texCoords[4] = sprite.getU2();
+		texCoords[5] = sprite.getV();
+
+		vertices[6] = sprite.getX() + sprite.getWidth();
+		vertices[7] = sprite.getY();
+
+		texCoords[6] = sprite.getU2();
+		texCoords[7] = sprite.getV2();
+
+		indices[0] = 0;
+		indices[1] = 1;
+		indices[2] = 2;
+		indices[3] = 2;
+		indices[4] = 3;
+		indices[5] = 0;
+
+		return new PolygonDefinition(vertices, texCoords, indices);
 	}
 
 }
