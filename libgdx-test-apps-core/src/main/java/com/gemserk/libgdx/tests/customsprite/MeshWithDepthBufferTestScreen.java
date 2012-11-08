@@ -71,6 +71,9 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 	PolygonRegion insidePolygonDefinition;
 	PolygonRegion borderPolygonDefinition;
 	Texture texture;
+	
+	MeshSprite wormMeshSprite;
+	MeshSprite wormMeshSprite2;
 
 	@Override
 	public void create() {
@@ -96,7 +99,14 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		insidePolygonDefinition = new PolygonRegion(wormSprite, Gdx.files.internal("data/polygons/worm-inside"));
 		borderPolygonDefinition = new PolygonRegion(wormSprite, Gdx.files.internal("data/polygons/worm-border"));
 
-		generateElements(100);
+		wormMeshSprite = MeshSprite.fromSprite(wormSprite);
+		wormMeshSprite.setRotation(0f);
+		
+		wormMeshSprite2 = MeshSprite.fromSprite(wormSprite);
+		wormMeshSprite2.setPosition(-100, 0);
+		wormMeshSprite2.setRotation(0f);
+
+		// generateElements(100);
 
 		meshSpriteBatch = new MeshSpriteBatch();
 
@@ -227,7 +237,7 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 	}
 
 	private MeshSprite createMeshSprite(PolygonRegion wormInsidePolygon, Texture texture) {
-		return new MeshSprite(wormInsidePolygon.getLocalVertices(), wormInsidePolygon.getTextureCoords(), texture);
+		return new MeshSprite(wormInsidePolygon.getLocalVertices(), wormInsidePolygon.getTextureCoords(), null, texture);
 	}
 
 	@Override
@@ -259,25 +269,29 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		for (int i = 0; i < opaqueSprites.size(); i++) {
 			MeshSprite sprite = opaqueSprites.get(i);
 			// sprite.setZ(0f);
-			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices());
+			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
 		}
 		meshSpriteBatch.end();
 
-		meshSpriteBatch.setDepthTestEnabled(true);
 		if (blending)
 			meshSpriteBatch.enableBlending();
 		else
 			meshSpriteBatch.disableBlending();
 
 		meshSpriteBatch.begin();
+		
 		for (int i = 0; i < transparentSprites.size(); i++) {
 			MeshSprite sprite = transparentSprites.get(i);
 			// sprite.setZ(0f);
-			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices());
+			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
 		}
-		meshSpriteBatch.end();
-
+		
+		meshSpriteBatch.draw(wormMeshSprite.getTexture(), wormMeshSprite.getVertices(), wormMeshSprite.getIndices());
+		meshSpriteBatch.draw(wormMeshSprite2.getTexture(), wormMeshSprite2.getVertices(), wormMeshSprite2.getIndices());
+		
 		meshSpriteBatch.setDepthTestEnabled(false);
+		
+		meshSpriteBatch.end();
 
 		stage.draw();
 	}

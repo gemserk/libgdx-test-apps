@@ -23,9 +23,12 @@ public class MeshSpriteBatch {
 
 	private Texture lastTexture = null;
 
-	private int idx = 0;
+	private short idx = 0;
+	private int indicesIndex = 0;
 	private int currBufferIdx = 0;
+
 	private final float[] vertices;
+	private final short[] indices;
 
 	private final Matrix4 transformMatrix = new Matrix4();
 	private final Matrix4 projectionMatrix = new Matrix4();
@@ -70,7 +73,7 @@ public class MeshSpriteBatch {
 		this.buffers = new Mesh[buffers];
 
 		for (int i = 0; i < buffers; i++) {
-			this.buffers[i] = new Mesh(VertexDataType.VertexArray, false, size, 0, //
+			this.buffers[i] = new Mesh(VertexDataType.VertexArray, false, size, size, //
 					VertexAttribute.Position(), //
 					VertexAttribute.Color(),//
 					VertexAttribute.TexCoords(0));
@@ -79,9 +82,12 @@ public class MeshSpriteBatch {
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		vertices = new float[size * VERTEX_SIZE];
+		// 1 index per each vertex
+		indices = new short[size];
 
 		mesh = this.buffers[0];
-		
+		mesh.setIndices(indices, 0, size);
+
 		if (Gdx.graphics.isGL20Available() && defaultShader == null) {
 			shader = createDefaultShader();
 			ownsShader = true;
@@ -151,6 +157,8 @@ public class MeshSpriteBatch {
 		setupMatrices();
 
 		idx = 0;
+		indicesIndex = 0;
+
 		lastTexture = null;
 		drawing = true;
 	}
@@ -173,6 +181,7 @@ public class MeshSpriteBatch {
 			flush();
 		lastTexture = null;
 		idx = 0;
+		indicesIndex = 0;
 		drawing = false;
 
 		// gl.glDepthMask(true);
@@ -187,11 +196,11 @@ public class MeshSpriteBatch {
 		}
 	}
 
-	public void draw(Texture texture, float[] spriteVertices) {
-		this.draw(texture, spriteVertices, 0, spriteVertices.length);
+	public void draw(Texture texture, float[] spriteVertices, short[] indices) {
+		this.draw(texture, spriteVertices, 0, spriteVertices.length, indices, 0, indices.length);
 	}
 
-	public void draw(Texture texture, float[] spriteVertices, int offset, int length) {
+	private void draw(Texture texture, float[] spriteVertices, int offset, int length, short[] indices, int indicesOffset, int indicesLength) {
 		if (!drawing)
 			throw new IllegalStateException("begin must be called before draw.");
 
@@ -204,6 +213,16 @@ public class MeshSpriteBatch {
 			throw new IllegalArgumentException("Can't handle so " + length + " vertices in one call, increase batch vertices size, current size " + vertices.length);
 
 		System.arraycopy(spriteVertices, offset, vertices, idx, length);
+
+		// System.arraycopy(indices, offset, this.indices, indicesIndex, indicesLength);
+
+		int iOffset = idx / VERTEX_SIZE;
+
+		for (int i = 0; i < indicesLength; i++)
+			this.indices[indicesIndex + i] = (short) (indices[i] + iOffset);
+
+		indicesIndex += indicesLength;
+
 		idx += length;
 	}
 
@@ -224,6 +243,11 @@ public class MeshSpriteBatch {
 		lastTexture.bind();
 		mesh.setVertices(vertices, 0, idx);
 
+		mesh.getIndicesBuffer().position(0);
+		mesh.getIndicesBuffer().limit(indicesIndex);
+		
+		mesh.setIndices(indices, 0, indicesIndex);
+
 		// if (blendingDisabled) {
 		// Gdx.gl.glDisable(GL20.GL_BLEND);
 		// } else {
@@ -233,14 +257,16 @@ public class MeshSpriteBatch {
 
 		if (Gdx.graphics.isGL20Available()) {
 			if (customShader != null)
-				mesh.render(customShader, GL10.GL_TRIANGLES, 0, verticesInBatch);
+				mesh.render(customShader, GL10.GL_TRIANGLES, 0, indicesIndex);
 			else
-				mesh.render(shader, GL10.GL_TRIANGLES, 0, verticesInBatch);
+				mesh.render(shader, GL10.GL_TRIANGLES, 0, indicesIndex);
 		} else {
-			mesh.render(GL10.GL_TRIANGLES, 0, verticesInBatch);
+			mesh.render(GL10.GL_TRIANGLES, 0, indicesIndex);
 		}
 
 		idx = 0;
+		indicesIndex = 0;
+
 		currBufferIdx++;
 		if (currBufferIdx == buffers.length)
 			currBufferIdx = 0;
@@ -255,7 +281,7 @@ public class MeshSpriteBatch {
 			flush();
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 		}
-		
+
 		blendingDisabled = true;
 	}
 
@@ -268,7 +294,7 @@ public class MeshSpriteBatch {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(blendSrcFunc, blendDstFunc);
 		}
-		
+
 		blendingDisabled = false;
 	}
 

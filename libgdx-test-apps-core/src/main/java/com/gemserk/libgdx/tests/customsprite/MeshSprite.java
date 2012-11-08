@@ -28,6 +28,11 @@ public class MeshSprite implements MeshSpriteInterface {
 	 */
 	public float[] meshVertices;
 
+	/**
+	 * a short[] with the indices of each vertex index, can be reused between different meshsprites.
+	 */
+	public short[] indices;
+
 	public Rectangle bounds;
 
 	/**
@@ -56,7 +61,8 @@ public class MeshSprite implements MeshSpriteInterface {
 	final Matrix4 matrix4 = new Matrix4();
 	final Vector3 vector3 = new Vector3();
 
-	public MeshSprite(float[] vertices, float[] texCoords, Texture texture) {
+	public MeshSprite(float[] vertices, float[] texCoords, short[] indices, Texture texture) {
+		this.indices = indices;
 		this.vertices = new float[vertices.length];
 		this.texCoords = new float[texCoords.length];
 
@@ -219,6 +225,10 @@ public class MeshSprite implements MeshSpriteInterface {
 		setScale(sx * amount, sy * amount);
 	}
 
+	public short[] getIndices() {
+		return indices;
+	}
+
 	@Override
 	public float[] getVertices() {
 		if (dirty)
@@ -283,7 +293,7 @@ public class MeshSprite implements MeshSpriteInterface {
 			getVertices();
 		return bounds;
 	}
-	
+
 	public float getZ() {
 		return z;
 	}
@@ -343,48 +353,44 @@ public class MeshSprite implements MeshSpriteInterface {
 		return texture;
 	}
 
-	private static final float[] tmpVertices = new float[6 * 2];
-	private static final float[] tmpTexCoords = new float[6 * 2];
-	
+	private static final float[] tmpVertices = new float[4 * 2];
+	private static final float[] tmpTexCoords = new float[4 * 2];
+
 	public static MeshSprite fromSprite(Sprite sprite) {
+		short[] indices = new short[6];
 
 		tmpVertices[0] = sprite.getX();
-		tmpVertices[0 + 1] = sprite.getY();
-
-		tmpVertices[2] = sprite.getX();
-		tmpVertices[2 + 1] = sprite.getY() + sprite.getHeight();
-
-		tmpVertices[4] = sprite.getX() + sprite.getWidth();
-		tmpVertices[4 + 1] = sprite.getY() + sprite.getHeight();
-
-		tmpVertices[6] = sprite.getX();
-		tmpVertices[6 + 1] = sprite.getY();
-
-		tmpVertices[8] = sprite.getX() + sprite.getWidth();
-		tmpVertices[8 + 1] = sprite.getY() + sprite.getHeight();
-
-		tmpVertices[10] = sprite.getX() + sprite.getWidth();
-		tmpVertices[10 + 1] = sprite.getY();
+		tmpVertices[1] = sprite.getY();
 
 		tmpTexCoords[0] = sprite.getU();
 		tmpTexCoords[1] = sprite.getV2();
 
+		tmpVertices[2] = sprite.getX();
+		tmpVertices[3] = sprite.getY() + sprite.getHeight();
+		
 		tmpTexCoords[2] = sprite.getU();
 		tmpTexCoords[3] = sprite.getV();
 
+		tmpVertices[4] = sprite.getX() + sprite.getWidth();
+		tmpVertices[5] = sprite.getY() + sprite.getHeight();
+		
 		tmpTexCoords[4] = sprite.getU2();
 		tmpTexCoords[5] = sprite.getV();
-		
-		tmpTexCoords[6] = sprite.getU();
+
+		tmpVertices[6] = sprite.getX() + sprite.getWidth();
+		tmpVertices[7] = sprite.getY();
+
+		tmpTexCoords[6] = sprite.getU2();
 		tmpTexCoords[7] = sprite.getV2();
 
-		tmpTexCoords[8] = sprite.getU2();
-		tmpTexCoords[9] = sprite.getV();
+		indices[0] = 0;
+		indices[1] = 1;
+		indices[2] = 2;
+		indices[3] = 2;
+		indices[4] = 3;
+		indices[5] = 0;
 
-		tmpTexCoords[10] = sprite.getU2();
-		tmpTexCoords[11] = sprite.getV2();
-
-		return new MeshSprite(tmpVertices, tmpTexCoords, sprite.getTexture());
+		return new MeshSprite(tmpVertices, tmpTexCoords, indices, sprite.getTexture());
 	}
-	
+
 }
