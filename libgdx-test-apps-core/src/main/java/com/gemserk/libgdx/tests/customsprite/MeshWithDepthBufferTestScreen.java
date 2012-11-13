@@ -83,13 +83,17 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		atlas = new TextureAtlas(Gdx.files.internal("data/images/polygon.atlas"));
 
 		Sprite wormSprite = atlas.createSprite("worm");
+		Sprite farmSprite = atlas.createSprite("farm");
 
 		texture = wormSprite.getTexture();
 
 		opaqueSprites = new ArrayList<MeshSprite>();
 		transparentSprites = new ArrayList<MeshSprite>();
 
-		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-inside"), wormSprite);
+		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-inside"), 
+				wormSprite);
+//		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/farm.mesh"), 
+//				farmSprite);
 		borderPolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-border"), wormSprite);
 
 		generateElements(100);

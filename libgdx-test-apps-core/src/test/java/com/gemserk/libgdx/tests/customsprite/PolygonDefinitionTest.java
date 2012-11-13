@@ -17,6 +17,8 @@ public class PolygonDefinitionTest {
 		};
 
 		short[] indices = { 0, 1, 2, 3, 4, 5 };
+		
+		// TEST WITH ONE VERTEX TWICE!!
 
 		PolygonDefinition.cleanIndices(vertices, indices);
 		PolygonDefinition.removeDuplicatedIndices(vertices, texCoords, indices);

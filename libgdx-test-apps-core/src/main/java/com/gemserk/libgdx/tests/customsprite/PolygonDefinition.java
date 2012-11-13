@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasSprite;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 
@@ -164,12 +166,49 @@ public class PolygonDefinition {
 	}
 
 	private static void transformToRegionCoordinates(float[] texCoords, TextureRegion region) {
-		float uvWidth = region.getU2() - region.getU();
-		float uvHeight = region.getV2() - region.getV();
+		float u = region.getU();
+		float v = region.getV();
+		float u2 = region.getU2();
+		float v2 = region.getV2();
 
-		for (int i = 0; i < texCoords.length; i += 2) {
-			texCoords[i] = region.getU() + texCoords[i] * uvWidth;
-			texCoords[i + 1] = region.getV() + texCoords[i + 1] * uvHeight;
+		float uvWidth = u2 - u;
+		float uvHeight = v2 - v;
+
+		float offsetX = 0f;
+		float offsetY = 0f;
+
+		int textureWidth = region.getTexture().getWidth();
+		int textureHeight = region.getTexture().getHeight();
+
+		if (region instanceof AtlasSprite) {
+			AtlasSprite atlasSprite = (AtlasSprite) region;
+			AtlasRegion atlasRegion = atlasSprite.getAtlasRegion();
+
+			int width = atlasRegion.originalWidth;
+			int height = atlasRegion.originalHeight;
+
+			for (int i = 0; i < texCoords.length; i += 2) {
+				float tx = texCoords[i];
+				float ty = texCoords[i + 1];
+
+				float vx = tx * width;
+				float vy = ty * height;
+
+				float v_x = vx + region.getRegionX() - atlasRegion.offsetX;
+				float v_y = vy + region.getRegionY() - atlasRegion.offsetY;
+
+				float t_x = v_x / ((float) textureWidth);
+				float t_y = v_y / ((float) textureHeight);
+
+				texCoords[i] = t_x;
+				texCoords[i + 1] = t_y;
+			}
+
+		} else {
+			for (int i = 0; i < texCoords.length; i += 2) {
+				texCoords[i] = (u + texCoords[i] - offsetX) * uvWidth;
+				texCoords[i + 1] = (v + texCoords[i + 1] - offsetY) * uvHeight;
+			}
 		}
 	}
 
