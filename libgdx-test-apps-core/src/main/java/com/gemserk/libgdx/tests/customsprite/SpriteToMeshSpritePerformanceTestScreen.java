@@ -203,7 +203,7 @@ public class SpriteToMeshSpritePerformanceTestScreen extends TestScreen {
 			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
 		}
 		meshSpriteBatch.end();
-
+		
 		stage.draw();
 	}
 

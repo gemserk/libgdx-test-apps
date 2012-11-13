@@ -206,7 +206,7 @@ public class MeshSpriteBatch {
 
 		switchTexture(texture);
 
-		if (idx + length > vertices.length || indicesIndex + indicesLength > indices.length)
+		if (idx + length > vertices.length || indicesIndex + indicesLength > this.indices.length)
 			flush();
 
 		if (length > vertices.length)
