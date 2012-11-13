@@ -90,10 +90,9 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		opaqueSprites = new ArrayList<MeshSprite>();
 		transparentSprites = new ArrayList<MeshSprite>();
 
-		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-inside"), 
-				wormSprite);
-//		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/farm.mesh"), 
-//				farmSprite);
+		insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-inside"), wormSprite);
+		// insidePolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/farm.mesh"),
+		// farmSprite);
 		borderPolygonDefinition = PolygonDefinition.loadPolygonDefinition(Gdx.files.internal("data/polygons/worm-border"), wormSprite);
 
 		generateElements(100);
@@ -251,6 +250,8 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Gdx.gl.glClearDepthf(1f);
 
+		float zfrac = -(Math.abs(camera.near - camera.far) - 1) / opaqueSprites.size();
+
 		meshSpriteBatch.setDepthTestEnabled(true);
 		meshSpriteBatch.disableBlending();
 
@@ -258,7 +259,11 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 		meshSpriteBatch.begin();
 		for (int i = 0; i < opaqueSprites.size(); i++) {
 			MeshSprite sprite = opaqueSprites.get(i);
-			// sprite.setZ(0f);
+			MeshSprite transparent = transparentSprites.get(transparentSprites.size() - i - 1);
+			float z = camera.near + zfrac * (i + 1);
+			transparent.setZ(z);
+			sprite.setZ(z);
+			// System.out.println(z);
 			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
 		}
 		meshSpriteBatch.end();
@@ -272,7 +277,8 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 
 		for (int i = 0; i < transparentSprites.size(); i++) {
 			MeshSprite sprite = transparentSprites.get(i);
-			// sprite.setZ(0f);
+			// float z = -camera.far - zfrac * (i + 1);
+			// sprite.setZ(z);
 			meshSpriteBatch.draw(sprite.getTexture(), sprite.getVertices(), sprite.getIndices());
 		}
 
