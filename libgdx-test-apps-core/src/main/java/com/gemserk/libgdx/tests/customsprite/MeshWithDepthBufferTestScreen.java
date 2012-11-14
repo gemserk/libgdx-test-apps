@@ -274,6 +274,7 @@ public class MeshWithDepthBufferTestScreen extends TestScreen {
 			meshSpriteBatch.disableBlending();
 
 		meshSpriteBatch.begin();
+		Gdx.gl.glDepthMask(false);
 
 		for (int i = 0; i < transparentSprites.size(); i++) {
 			MeshSprite sprite = transparentSprites.get(i);
