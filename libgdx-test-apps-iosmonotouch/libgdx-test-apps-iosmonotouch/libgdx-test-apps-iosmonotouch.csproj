@@ -71,7 +71,6 @@
     <MtouchI18n>west</MtouchI18n>
     <MtouchArch>ARMv7</MtouchArch>
     <IpaPackageName />
-    <MtouchLink>None</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
@@ -150,6 +149,8 @@
   <ItemGroup>
     <Folder Include="data\" />
     <Folder Include="data\ui\" />
+    <Folder Include="data\images\" />
+    <Folder Include="data\polygons\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\ui\uiskin.png">
@@ -163,6 +164,36 @@
     </Content>
     <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\ui\uiskin.json">
       <Link>data\ui\uiskin.json</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\images\images.png">
+      <Link>data\images\images.png</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\images\images.atlas">
+      <Link>data\images\images.atlas</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\images\polygon.png">
+      <Link>data\images\polygon.png</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\images\small.png">
+      <Link>data\images\small.png</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\images\polygon.atlas">
+      <Link>data\images\polygon.atlas</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\images\small.atlas">
+      <Link>data\images\small.atlas</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\polygons\worm">
+      <Link>data\polygons\worm</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\polygons\farm.mesh">
+      <Link>data\polygons\farm.mesh</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\polygons\worm-border">
+      <Link>data\polygons\worm-border</Link>
+    </Content>
+    <Content Include="..\..\libgdx-test-apps-desktop\src\main\resources\data\polygons\worm-inside">
+      <Link>data\polygons\worm-inside</Link>
     </Content>
   </ItemGroup>
 </Project>
